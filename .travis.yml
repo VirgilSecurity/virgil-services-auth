@@ -18,8 +18,8 @@ before_install:
   - ./build/go-get-virgil-crypto.sh
 
 install:
-  - go test ./...
-  - DB=127.0.0.1:27017 go test ./... -tags=integration
+  - go test -i ./...
+  - DB=127.0.0.1:27017 go test -i ./... -tags=integration
   - go build -v --ldflags '-extldflags "-static"' -o main
 
 before_script:
