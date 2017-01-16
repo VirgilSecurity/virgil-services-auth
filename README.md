@@ -236,7 +236,7 @@ Additional information about the error is returned as JSON-object like:
 ```
 
 # Appendix B. Environment
-Command line arguments (prefix: )| Environment name | Description
+Command line arguments (prefix: --)| Environment name | Description
 ---|---|---
 db | DB | Connection string to mongodb (`required`) |
 token | TOKEN | Token to get access to Virgil Cards service (`required`)
