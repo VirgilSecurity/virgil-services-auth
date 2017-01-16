@@ -1,0 +1,16 @@
+/bootstrap/compiled.php
+/vendor
+composer.phar
+composer.lock
+
+.DS_Store
+
+.idea/*
+_ide_helper.php
+
+storage/*
+
+# Service configuration settings
+.env
+config/key-pair/public-key
+config/key-pair/private-key
