@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/valyala/fasthttp"
-	"github.com/virgilsecurity/virgil-services-auth/core"
+	"github.com/VirgilSecurity/virgil-services-auth/core"
 )
 
 type response struct {

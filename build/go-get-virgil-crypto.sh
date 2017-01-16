@@ -6,7 +6,7 @@ pwd
 # until crypto-go wrapper is not published
 cd $GOPATH
 mkdir -p $GOPATH/src/github.com/VirgilSecurity/virgil-crypto-go
-wget cdn.virgilsecurity.com/crypto-go/crypto-go-linux.tgz
+wget cdn.VirgilSecurity.com/crypto-go/crypto-go-linux.tgz
 tar -xvf crypto-go-linux.tgz --strip-components=1 -C $GOPATH/src/github.com/VirgilSecurity/virgil-crypto-go/
 cd -
 echo "listing: $GOPATH/src/github.com/VirgilSecurity/virgil-crypto-go/"

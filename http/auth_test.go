@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/mock"
-	"github.com/virgilsecurity/virgil-services-auth/core"
+	"github.com/VirgilSecurity/virgil-services-auth/core"
 )
 
 type FakeAuthService struct {

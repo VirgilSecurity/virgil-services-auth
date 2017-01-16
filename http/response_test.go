@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
-	"github.com/virgilsecurity/virgil-services-auth/core"
+	"github.com/VirgilSecurity/virgil-services-auth/core"
 )
 
 func makeRequestCtx(body interface{}) *fasthttp.RequestCtx {

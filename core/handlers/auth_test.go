@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/VirgilSecurity/virgil-services-auth/core"
+	"github.com/VirgilSecurity/virgil-services-auth/db"
 	"github.com/stretchr/testify/mock"
-	"github.com/virgilsecurity/virgil-services-auth/core"
-	"github.com/virgilsecurity/virgil-services-auth/db"
 )
 
 type FakeResponse struct {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/virgilsecurity/virgil-services-auth/db"
+	"github.com/VirgilSecurity/virgil-services-auth/db"
 	"gopkg.in/dgrijalva/jwt-go.v3"
 	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"
 )

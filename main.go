@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/namsral/flag"
-	"github.com/virgilsecurity/virgil-services-auth/app"
+	"github.com/VirgilSecurity/virgil-services-auth/app"
 )
 
 var (

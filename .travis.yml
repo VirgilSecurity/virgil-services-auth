@@ -36,17 +36,17 @@ before_script:
 #   # verify build
 #   # deploy artifacts, etc
 #   - 'if [ $TRAVIS_BRANCH == "master" ]; then
-#        docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
-#        docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
-#        docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
-#        docker push virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
-#        docker push virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
-#        echo virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
+#        docker tag $IMAGENAME VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
+#        docker tag $IMAGENAME VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
+#        docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" VirgilSecurity-docker-core.bintray.io;
+#        docker push VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
+#        docker push VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
+#        echo VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
 #      else
-#        docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services-dev/$IMAGENAME:latest;
-#        docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
-#        docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
-#        docker push virgilsecurity-docker-core.bintray.io/services-dev/$IMAGENAME:latest;
-#        docker push virgilsecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
-#        echo virgilsecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
+#        docker tag $IMAGENAME VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:latest;
+#        docker tag $IMAGENAME VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
+#        docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" VirgilSecurity-docker-core.bintray.io;
+#        docker push VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:latest;
+#        docker push VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
+#        echo VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
 #      fi'

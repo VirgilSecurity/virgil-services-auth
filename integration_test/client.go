@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/dghubble/sling"
-	"github.com/virgilsecurity/virgil-services-auth/core"
+	"github.com/VirgilSecurity/virgil-services-auth/core"
 )
 
 func MakeClient() *client {

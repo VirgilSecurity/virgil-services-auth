@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"time"
 
-	"github.com/virgilsecurity/virgil-services-auth/db"
+	"github.com/VirgilSecurity/virgil-services-auth/db"
 	mgo "gopkg.in/mgo.v2"
 )
 

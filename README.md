@@ -51,7 +51,7 @@ with it.
 
 
 ## General information
-* The service's application identity value is **com.virgilsecurity.auth**, so the public card can be found on the
+* The service's application identity value is **com.VirgilSecurity.auth**, so the public card can be found on the
  Virgil Card service using */card/{card-id}* endpoint.
 
 
@@ -123,7 +123,7 @@ Response:
 * **state** request parameter to prevent CSRF-attacks. This parameters will be returned in the response;
 
 Scope examples:
-com.virgilsecurity.keys_virgil_card[65bce698-b7be-46d3-941b-66936b235314,05e22b5b-8ff8-410f-b60a-b5347635220b]_*
+com.VirgilSecurity.keys_virgil_card[65bce698-b7be-46d3-941b-66936b235314,05e22b5b-8ff8-410f-b60a-b5347635220b]_*
 -->
 
 

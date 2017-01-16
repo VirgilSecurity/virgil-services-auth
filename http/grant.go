@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/valyala/fasthttp"
-	"github.com/virgilsecurity/virgil-services-auth/core"
+	"github.com/VirgilSecurity/virgil-services-auth/core"
 )
 
 // Grant middleware between http and high level service

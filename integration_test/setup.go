@@ -9,8 +9,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/VirgilSecurity/virgil-services-auth/app"
 	"github.com/valyala/fasthttp"
-	"github.com/virgilsecurity/virgil-services-auth/app"
 	"gopkg.in/mgo.v2"
 	virgil "gopkg.in/virgilsecurity/virgil-sdk-go.v4"
 	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"

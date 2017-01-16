@@ -15,12 +15,12 @@ import (
 
 	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"
 
+	crypto "github.com/VirgilSecurity/virgil-crypto-go"
+	"github.com/VirgilSecurity/virgil-services-auth/core"
+	"github.com/VirgilSecurity/virgil-services-auth/db"
+	"github.com/VirgilSecurity/virgil-services-auth/db/repo"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
-	crypto "github.com/virgilsecurity/virgil-crypto-go"
-	"github.com/virgilsecurity/virgil-services-auth/core"
-	"github.com/virgilsecurity/virgil-services-auth/db"
-	"github.com/virgilsecurity/virgil-services-auth/db/repo"
 
 	"github.com/namsral/flag"
 )

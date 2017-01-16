@@ -3,8 +3,8 @@ package handlers
 import (
 	"time"
 
-	"github.com/virgilsecurity/virgil-services-auth/core"
-	"github.com/virgilsecurity/virgil-services-auth/db"
+	"github.com/VirgilSecurity/virgil-services-auth/core"
+	"github.com/VirgilSecurity/virgil-services-auth/db"
 )
 
 const (
