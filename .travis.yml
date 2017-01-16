@@ -3,7 +3,7 @@ sudo: required
 services:
   - docker
   - mongodb
-  
+
 
 env:
   global:
@@ -27,7 +27,7 @@ before_script:
   - ls -l
   - echo $TRAVIS_COMMIT $TRAVIS_BRANCH
   - docker version
-  - time docker build -t $IMAGENAME --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_BRANCH=$TRAVIS_BRANCH  -f build/Dockerfile_alpine .
+  - time docker build -t $IMAGENAME --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_BRANCH=$TRAVIS_BRANCH  -f build/Dockerfile .
   - docker images
   - docker inspect -f '{{index .ContainerConfig.Labels "git-commit"}}' $IMAGENAME
   - docker inspect -f '{{index .ContainerConfig.Labels "git-branch"}}' $IMAGENAME
