@@ -16,11 +16,11 @@ go:
 before_install:
   - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
   - ./build/go-get-virgil-crypto.sh
+  - go get ./...
   - go get -t ./...
 
 install:
-  - go test -i ./...
-  - DB=127.0.0.1:27017 go test -i ./... -tags=integration
+  - DB=127.0.0.1:27017 go test ./... -tags=integration
   - go build -v --ldflags '-extldflags "-static"' -o main
 
 before_script:
