@@ -4,16 +4,16 @@ import (
 	"log"
 	"os"
 
-	crypto "github.com/VirgilSecurity/virgil-crypto-go"
 	"github.com/VirgilSecurity/virgil-services-auth/core/handlers"
 	"github.com/VirgilSecurity/virgil-services-auth/db/repo"
 	"github.com/VirgilSecurity/virgil-services-auth/http"
 	"github.com/VirgilSecurity/virgil-services-auth/services"
 	"github.com/valyala/fasthttp"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/virgilsecurity/virgil-sdk-go.v4"
-	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/transport/virgilhttp"
-	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"
+	virgil "gopkg.in/virgil.v4"
+	"gopkg.in/virgil.v4/transport/virgilhttp"
+	"gopkg.in/virgil.v4/virgilcrypto"
+	crypto "gopkg.in/virgilsecurity/virgil-crypto-go.v4"
 )
 
 type VirgilClient struct {
@@ -58,7 +58,7 @@ func Init(conf Config) {
 
 	var clientOptions []func(*virgil.Client)
 	if conf.VirgilClient.Host != "" {
-		clientOptions = append(clientOptions, virgil.ClientTransport(virgilhttp.NewTransportClient(conf.VirgilClient.Host, conf.VirgilClient.Host, conf.VirgilClient.Host)))
+		clientOptions = append(clientOptions, virgil.ClientTransport(virgilhttp.NewTransportClient(conf.VirgilClient.Host, conf.VirgilClient.Host, conf.VirgilClient.Host, conf.VirgilClient.Host)))
 	}
 	if conf.VirgilClient.AuthorityCardID != "" && conf.VirgilClient.AuthorityPublicKey != "" {
 		pub, err := virgil.Crypto().ImportPublicKey([]byte(conf.VirgilClient.AuthorityPublicKey))

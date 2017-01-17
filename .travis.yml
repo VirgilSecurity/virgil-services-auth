@@ -16,6 +16,7 @@ go:
 before_install:
   - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
   - ./build/go-get-virgil-crypto.sh
+  - go get -t ./...
 
 install:
   - go test -i ./...

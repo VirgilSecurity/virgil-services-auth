@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"
+	"gopkg.in/virgil.v4/virgilcrypto"
 )
 
 func TestReversibility(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/dgrijalva/jwt-go.v3"
-	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"
+	"gopkg.in/virgil.v4/virgilcrypto"
 )
 
 var appPrivateKey = []byte(`-----BEGIN PRIVATE KEY-----

@@ -12,8 +12,8 @@ import (
 	"github.com/VirgilSecurity/virgil-services-auth/app"
 	"github.com/valyala/fasthttp"
 	"gopkg.in/mgo.v2"
-	virgil "gopkg.in/virgilsecurity/virgil-sdk-go.v4"
-	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"
+	virgil "gopkg.in/virgil.v4"
+	"gopkg.in/virgil.v4/virgilcrypto"
 )
 
 type card struct {

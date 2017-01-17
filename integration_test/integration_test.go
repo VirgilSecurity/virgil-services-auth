@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"
+	"gopkg.in/virgil.v4/virgilcrypto"
 
 	crypto "github.com/VirgilSecurity/virgil-crypto-go"
 	"github.com/VirgilSecurity/virgil-services-auth/core"

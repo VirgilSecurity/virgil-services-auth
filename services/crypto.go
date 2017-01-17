@@ -3,7 +3,7 @@ package services
 import (
 	"bytes"
 
-	"gopkg.in/virgilsecurity/virgil-sdk-go.v4/virgilcrypto"
+	"gopkg.in/virgil.v4/virgilcrypto"
 )
 
 type Crypto struct {
