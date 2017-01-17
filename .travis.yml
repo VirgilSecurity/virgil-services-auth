@@ -16,14 +16,18 @@ go:
 before_install:
   - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
   - ./build/go-get-virgil-crypto.sh
+
+
+install:
   - go get ./...
   - go get -t ./...
 
-install:
+script:
   - DB=127.0.0.1:27017 go test ./... -tags=integration
   - go build -v --ldflags '-extldflags "-static"' -o main
 
-before_script:
+
+after_success:
   # build Docker image with compiled code, lauch side containers for testings
   - ls -l
   - echo $TRAVIS_COMMIT $TRAVIS_BRANCH
@@ -32,22 +36,3 @@ before_script:
   - docker images
   - docker inspect -f '{{index .ContainerConfig.Labels "git-commit"}}' $IMAGENAME
   - docker inspect -f '{{index .ContainerConfig.Labels "git-branch"}}' $IMAGENAME
-
-# script:
-#   # verify build
-#   # deploy artifacts, etc
-#   - 'if [ $TRAVIS_BRANCH == "master" ]; then
-#        docker tag $IMAGENAME VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
-#        docker tag $IMAGENAME VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
-#        docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" VirgilSecurity-docker-core.bintray.io;
-#        docker push VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
-#        docker push VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
-#        echo VirgilSecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
-#      else
-#        docker tag $IMAGENAME VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:latest;
-#        docker tag $IMAGENAME VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
-#        docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" VirgilSecurity-docker-core.bintray.io;
-#        docker push VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:latest;
-#        docker push VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
-#        echo VirgilSecurity-docker-core.bintray.io/services-dev/$IMAGENAME:$TRAVIS_COMMIT;
-#      fi'
