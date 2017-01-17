@@ -65,7 +65,7 @@ func setupAuthority() {
 		fmt.Println("Cannot generate Keypair")
 		os.Exit(1)
 	}
-	req, err := virgil.NewCreateCardRequest("root", "type", keyPair.PublicKey(), virgil.CardInfo{})
+	req, err := virgil.NewCreateCardRequest("root", "type", keyPair.PublicKey(), virgil.CardParams{})
 	if err != nil {
 		fmt.Println("Cannot generate Keypair")
 		os.Exit(1)
@@ -81,7 +81,7 @@ func setupAuthority() {
 		Meta: cardMeta{
 			CreatedAt:   "today",
 			CardVersion: "v4",
-			Signs:       req.Signatures,
+			Signs:       req.Meta.Signatures,
 		},
 	}
 }
@@ -92,7 +92,7 @@ func setupClient() {
 		fmt.Println("Cannot generate Keypair")
 		os.Exit(1)
 	}
-	req, err := virgil.NewCreateCardRequest("bob", "type", keyPair.PublicKey(), virgil.CardInfo{})
+	req, err := virgil.NewCreateCardRequest("bob", "type", keyPair.PublicKey(), virgil.CardParams{})
 	if err != nil {
 		fmt.Println("Cannot generate Keypair")
 		os.Exit(1)
@@ -109,7 +109,7 @@ func setupClient() {
 		Meta: cardMeta{
 			CreatedAt:   "today",
 			CardVersion: "v4",
-			Signs:       req.Signatures,
+			Signs:       req.Meta.Signatures,
 		},
 	}
 }
@@ -120,7 +120,7 @@ func setupUntrustedClient() {
 		fmt.Println("Cannot generate Keypair")
 		os.Exit(1)
 	}
-	req, err := virgil.NewCreateCardRequest("bob", "type", keyPair.PublicKey(), virgil.CardInfo{})
+	req, err := virgil.NewCreateCardRequest("bob", "type", keyPair.PublicKey(), virgil.CardParams{})
 	if err != nil {
 		fmt.Println("Cannot generate Keypair")
 		os.Exit(1)
@@ -136,7 +136,7 @@ func setupUntrustedClient() {
 		Meta: cardMeta{
 			CreatedAt:   "today",
 			CardVersion: "v4",
-			Signs:       req.Signatures,
+			Signs:       req.Meta.Signatures,
 		},
 	}
 }
