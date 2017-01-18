@@ -17,8 +17,7 @@ before_install:
 
 
 install:
-  - go get ./...
-  - go get -t ./...
+  - go get -t -u ./...
 
 script:
   - DB=127.0.0.1:27017 go test ./... -tags=integration

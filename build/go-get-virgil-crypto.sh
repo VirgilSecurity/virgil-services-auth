@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Getting virgil-crypto-go dependencies"
-go get -v ./...
+go get -v -u ./...
 pwd
 # until crypto-go wrapper is not published
 cd $GOPATH
