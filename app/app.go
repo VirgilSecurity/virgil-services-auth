@@ -44,7 +44,7 @@ func Init(conf Config) {
 
 	session, err := mgo.Dial(conf.DBConnection)
 	if err != nil {
-		logger.Fatalf("Cannot connect to db: %v", err)
+		logger.Fatalf("Cannot connect to db: %+v", err)
 	}
 	db := session.DB("auth")
 
@@ -54,11 +54,11 @@ func Init(conf Config) {
 	}
 	privk, err := virgil.Crypto().ImportPrivateKey(b, "")
 	if err != nil {
-		logger.Fatalf("Cannot import private.key: %v", err)
+		logger.Fatalf("Cannot import private.key: %+v", err)
 	}
 	pubk, err := privk.ExtractPublicKey()
 	if err != nil {
-		logger.Fatalf("Cannot extract public key: %v", err)
+		logger.Fatalf("Cannot extract public key: %+v", err)
 	}
 
 	var clientOptions []func(*virgil.Client)
@@ -82,7 +82,7 @@ func Init(conf Config) {
 
 	virgilClient, err := virgil.NewClient(conf.VirgilClient.Token, clientOptions...)
 	if err != nil {
-		logger.Fatalf("Cannot create virgil client: %v", err)
+		logger.Fatalf("Cannot create virgil client: %+v", err)
 	}
 
 	routing := http.Router{
