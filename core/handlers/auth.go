@@ -90,7 +90,7 @@ func (s *Auth) Refresh(resp core.Response, grantType string, token string) {
 func (s *Auth) Verify(resp core.Response, token string) {
 	accessToken, err := s.TokenRepo.Get(token)
 	if err != nil {
-		// HACK: We don't log this err because it can be contains many correct errors (token="", sign fraud and etc)
+		// HACK: We don't log this err because it contains many correct errors (token="", sign fraud and etc)
 		//s.Logger.Printf("Verify[get token]: %v", err)
 		resp.Error(core.StatusErrorAccessTokenBroken)
 		return
