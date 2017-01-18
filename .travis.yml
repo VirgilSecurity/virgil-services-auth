@@ -3,8 +3,6 @@ sudo: required
 services:
   - docker
   - mongodb
-
-
 env:
   global:
     - IMAGENAME=virgil-oauth
@@ -36,3 +34,13 @@ after_success:
   - docker images
   - docker inspect -f '{{index .ContainerConfig.Labels "git-commit"}}' $IMAGENAME
   - docker inspect -f '{{index .ContainerConfig.Labels "git-branch"}}' $IMAGENAME
+   # verify build
+  # deploy artifacts, etc
+  - 'if [ $TRAVIS_BRANCH == "v4" ]; then
+       docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
+       docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
+       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
+       docker push virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
+       docker push virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
+       echo virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
+     fi'
