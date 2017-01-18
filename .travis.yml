@@ -5,7 +5,7 @@ services:
   - mongodb
 env:
   global:
-    - IMAGENAME=virgil-oauth
+    - IMAGENAME=virgil-auth
 language: go
 
 go:
