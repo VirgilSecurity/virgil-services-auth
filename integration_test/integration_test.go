@@ -30,7 +30,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&dbConnection, "db", "", "Connection string to mongodb")
+	flag.StringVar(&dbConnection, "db", "127.0.0.1:27017", "Connection string to mongodb")
 }
 
 func TestMain(m *testing.M) {

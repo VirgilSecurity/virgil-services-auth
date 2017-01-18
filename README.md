@@ -238,13 +238,13 @@ Additional information about the error is returned as JSON-object like:
 # Appendix B. Environment
 Command line arguments (prefix: --)| Environment name | Description
 ---|---|---
-db | DB | Connection string to mongodb (`required`) |
+db | DB | Connection string to mongodb (`by default 127.0.0.1:27017`) |
 token | TOKEN | Token to get access to Virgil Cards service (`required`)
 host | HOST | Host domain of Cards service (`by default used the Virgil Cards servcie`)
-key | KEY | Private key for response signing and message decrypion (`required`) |
+key | KEY | Private key for response signing and message decryption (encoded into bas64) (`required`) |
 address| ADDRESS | Auth service address (`by default :8080`)
 authid | AUTHID | Authority card id. All client card must be signed the Authority (`by default used Virgil Cards Service ID`)
-authpubkey | AUTHPUBKEY | Authority public key.  All client card must be signed the Authority (`by default used Virgil Cards Service Public key`)
+authpubkey | AUTHPUBKEY | Authority public key (encoded into bas64).  All client card must be signed the Authority (`by default used Virgil Cards Service Public key`)
 
 # Appendix C. Links
 The service was inspired by OAuth 2.0 and CHAP as a handshake protocol
