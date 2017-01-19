@@ -3,6 +3,7 @@
 VirgilAuth 4.0 focuses on client developer simplicity while providing specific authorization flows for web applications,
 desktop applications, mobile phones, and living room devices. This specification is being developed within the Virgil
 Security, Inc. and is based on the OAuth2.0 proposal.
+![scheme](https://github.com/VirgilSecurity/virgil-services-auth/blob/master/doc/scheme.png)
 
 
 
