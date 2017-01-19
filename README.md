@@ -75,8 +75,7 @@ An endpoint invocation encrypts a message for a resource owner.
 **Request:**
 ```json
 {
-    "resource_owner_virgil_card_id": "3e29d43373348cfb373b7eae189214dc01d7237765e572db685839b64adca853",
-    "scope":"search_global search_app"
+    "resource_owner_virgil_card_id": "3e29d43373348cfb373b7eae189214dc01d7237765e572db685839b64adca853"
 }
 ```
 <!--*FOR FUTURE PURPOSES:*
@@ -128,7 +127,7 @@ com.VirgilSecurity.keys_virgil_card[65bce698-b7be-46d3-941b-66936b235314,05e22b5
 
 
 
-### POST /authorization/actions/obtain-access-code
+### POST /authorization/actions/obtain-access-token
 
 The endpoint purpose is to exchange an `Authorization Grant` token from the previous step on a valid `Access Token`.
 
@@ -152,7 +151,7 @@ Response:
 
 
 
-### POST /authorization/actions/refresh-access-code
+### POST /authorization/actions/refresh-access-token
 
 The endpoint purpose is to generate a new `Access Token` using previously retrieved `Refresh Token`.
 

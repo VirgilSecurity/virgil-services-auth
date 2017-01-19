@@ -33,10 +33,10 @@ func (r *Router) Handler(ctx *fasthttp.RequestCtx) {
 	path := string(ctx.Path())
 
 	switch {
-	case path == "/authorization/actions/obtain-access-code":
+	case path == "/authorization/actions/obtain-access-token":
 		r.Auth.AccessToken(ctx)
 
-	case path == "/authorization/actions/refresh-access-code":
+	case path == "/authorization/actions/refresh-access-token":
 		r.Auth.Refresh(ctx)
 
 	case path == "/authorization/actions/verify":

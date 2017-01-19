@@ -14,7 +14,7 @@ type Token struct {
 
 type OwnerCard struct {
 	ID    string `json:"resource_owner_virgil_card_id"`
-	Scope string `json:"scope"`
+	Scope string `json:"scope,omitted"`
 }
 
 type EncryptedMessage struct {

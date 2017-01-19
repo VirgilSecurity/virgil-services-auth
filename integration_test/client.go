@@ -5,8 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/dghubble/sling"
 	"github.com/VirgilSecurity/virgil-services-auth/core"
+	"github.com/dghubble/sling"
 )
 
 func MakeClient() *client {
@@ -66,7 +66,7 @@ func (c *client) GetCode(msg core.EncryptedMessage) (string, error) {
 
 func (c *client) GetToken(code string) (*core.Token, error) {
 	s, e := new(core.Token), new(errorResponse)
-	resp, err := c.c.New().Post("/authorization/actions/obtain-access-code").BodyJSON(core.AccessCode{
+	resp, err := c.c.New().Post("/authorization/actions/obtain-access-token").BodyJSON(core.AccessCode{
 		GrantType: "access_code",
 		Code:      code,
 	}).Receive(s, e)
@@ -85,7 +85,7 @@ func (c *client) GetToken(code string) (*core.Token, error) {
 
 func (c *client) Refresh(token string) (*core.Token, error) {
 	s, e := new(core.Token), new(errorResponse)
-	resp, err := c.c.New().Post("/authorization/actions/refresh-access-code").BodyJSON(core.Token{
+	resp, err := c.c.New().Post("/authorization/actions/refresh-access-token").BodyJSON(core.Token{
 		Type:    "refresh_token",
 		Refresh: token,
 	}).Receive(s, e)
