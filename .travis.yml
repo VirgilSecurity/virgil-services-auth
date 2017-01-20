@@ -20,10 +20,10 @@ install:
 
 before_script:
   - echo $TRAVIS_COMMIT $TRAVIS_BRANCH
+  - DB=127.0.0.1:27017 go test ./... -tags=integration
 
 
 script:
-  - DB=127.0.0.1:27017 go test ./... -tags=integration
   - go build -v --ldflags '-extldflags "-static"' -o main
   - time docker build -t $IMAGENAME --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_BRANCH=$TRAVIS_BRANCH  -f build/Dockerfile .
   - docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:latest;

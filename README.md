@@ -16,10 +16,13 @@ Security, Inc. and is based on the OAuth2.0 proposal.
     * [POST /authorization/actions/obtain-access-code](#post-authorizationactionsobtain-access-code)
     * [POST /authorization/actions/refresh-access-code](#post-authorizationactionsrefresh-access-code)
     * [POST /authorization/actions/verify](#post-authorizationactionsverify)
-* [Environment](#environment)
-* [Dependency](#Dependency)
+* [Get in start](#get-in-start)
+    * [Prepare](#prepare)
+    * [Install](#install)
+    * [Usage](#usage)
+    * [Settings](#settings)
 * [Appendix A. Response codes](#appendix-a-response-codes)
-* [Appendix B. Environment](#appendix-b-response-sign)
+* [Appendix B. Environment](#appendix-b-environment)
 * [Appendix C. Links](#appendix-c-links)
 
 
@@ -192,9 +195,40 @@ Response:
 }
 ```
 
-# Environment
+# Get in start
+
+## Prepare
+
+Install [mongodb](https://www.mongodb.com)
+
+## Install
+
+Visit [Docker Hub](https://hub.docker.com/) see all available images and tags.
+
+## Usage
+
+Make sure that you run mongodb service with default port. Run the docker container by following commands
+
+```
+# Pull image from Docker Hub.
+$ docker pull virgilsecurity/virgil-auth
 
 
+# Use `docker run` for the first time.
+$ docker run --name=virgil-auth -p 80:8080 --net host -e TOKEN="{YOUR_VIRGIL_TOKEN}" -e KEY="{VIRGIL_AUTH_PRIVATE_KEY}" virgilsecurity/virgil-auth
+
+# Use `docker start` if you have stopped it.
+$ docker start virgil-auth
+```
+
+## Settings
+
+Most of settings are obvious and easy to understand, but some parameters needed more detailed description:
+- *Token:* The access token provides an authenticated secure access to the Virgil services. [How to create access token](https://virgilsecurity.com/docs/faq/add-access-token)
+- *Cards address:* It's address of Virgil [cards service](https://virgilsecurity.com/docs/services/cards/v4.0(latest)/cards-service). It provides interface to search user's card.
+- *Authority card:* It's a card whose signature we trust. If this parameter is set up then a client's card **must** have signature of the authority. The parameter contains of two values: card ID card and public key
+
+Full list of parameters in [Appendix B. Environment](#appendix-b-environment).
 
 # Appendix A. Response codes
 
@@ -240,11 +274,11 @@ Command line arguments (prefix: --)| Environment name | Description
 ---|---|---
 db | DB | Connection string to mongodb (`by default 127.0.0.1:27017`) |
 token | TOKEN | Token to get access to Virgil Cards service (`required`)
-host | HOST | Host domain of Cards service (`by default used the Virgil Cards servcie`)
+cards-address | CARDS_ADDRESS | Address of Cards service (`by default used the Virgil Cards service`)
 key | KEY | Private key for response signing and message decryption (encoded into bas64) (`required`) |
-address| ADDRESS | Auth service address (`by default :8080`)
-authid | AUTHID | Authority card id. All client card must be signed the Authority (`by default used Virgil Cards Service ID`)
-authpubkey | AUTHPUBKEY | Authority public key (encoded into bas64).  All client card must be signed the Authority (`by default used Virgil Cards Service Public key`)
+address| ADDRESS | Virgil Auth service address (`by default :8080`)
+authority-id | AUTHORITY_ID | Authority card id (`by default used Virgil Cards Service ID`)
+authority-pubkey | AUTHORITY_PUBKEY | Authority public key (encoded into bas64) (`by default used Virgil Cards Service Public key`)
 
 # Appendix C. Links
 The service was inspired by OAuth 2.0 and CHAP as a handshake protocol
