@@ -21,6 +21,9 @@ Security, Inc. and is based on the OAuth2.0 proposal.
     * [Install](#install)
     * [Usage](#usage)
     * [Settings](#settings)
+* [Health checker](#health-checker)
+    * [GET /health/status](#get-health-status)
+    * [GET /health/info](#get-health-info)
 * [Appendix A. Response codes](#appendix-a-response-codes)
 * [Appendix B. Environment](#appendix-b-environment)
 * [Appendix C. Links](#appendix-c-links)
@@ -229,6 +232,32 @@ Most of settings are obvious and easy to understand, but some parameters needed 
 - *Authority card:* It's a card whose signature we trust. If this parameter is set up then a client's card **must** have signature of the authority. The parameter contains of two values: card ID card and public key
 
 Full list of parameters in [Appendix B. Environment](#appendix-b-environment).
+
+# Health checker
+
+## GET /health/status
+
+This endpoint is used to get status of Virgil Auth service.
+Return StatusOK (200) if the service work correctly otherwise return StatusBadRequest(400)
+
+## GET /health/info
+
+This endpoint is used to get info of dependencies of Virgil Auth service.
+
+Response:
+```
+{
+  "mongo":{
+    "status":200,
+    "latency": 1,
+  },
+  "cards-service":{
+    "status":200,
+    "latency":113
+  }
+}
+```
+**Note:** Status parameter can take value 200 or 400. Latency parameter is measured in milliseconds
 
 # Appendix A. Response codes
 
