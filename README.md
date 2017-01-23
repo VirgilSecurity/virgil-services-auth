@@ -310,7 +310,7 @@ db | DB | Connection string to mongodb (`by default 127.0.0.1:27017`) |
 token | TOKEN | Token to get access to Virgil Cards service (`required`)
 cards-address | CARDS_ADDRESS | Address of Cards service (`by default used the Virgil Cards service`)
 key | KEY | Private key for response signing and message decryption (`required`) |
-key-password | KEY-PASSWORD | Passphrase for the private key |
+key-password | KEY_PASSWORD | Passphrase for the private key |
 address| ADDRESS | Virgil Auth service address (`by default :8080`)
 authority-id | AUTHORITY_ID | Authority card id (`by default used Virgil Cards Service ID`)
 authority-pubkey | AUTHORITY_PUBKEY | Authority public key (`by default used Virgil Cards Service Public key`)
