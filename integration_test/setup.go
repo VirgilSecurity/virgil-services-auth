@@ -2,7 +2,6 @@ package integration
 
 import (
 	"crypto/rand"
-	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -200,10 +199,10 @@ func setupAuthService() {
 			Token:              config.token,
 			Host:               config.cardsHost,
 			AuthorityCardID:    config.authority.Card.ID,
-			AuthorityPublicKey: base64.StdEncoding.EncodeToString(pub),
+			AuthorityPublicKey: string(pub),
 		},
 		PrivateServiceKey: app.PrivateKey{
-			Key:      base64.StdEncoding.EncodeToString(priv),
+			Key:      string(priv),
 			Passowrd: "123",
 		},
 	})

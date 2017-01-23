@@ -309,11 +309,11 @@ Command line arguments (prefix: --)| Environment name | Description
 db | DB | Connection string to mongodb (`by default 127.0.0.1:27017`) |
 token | TOKEN | Token to get access to Virgil Cards service (`required`)
 cards-address | CARDS_ADDRESS | Address of Cards service (`by default used the Virgil Cards service`)
-key | KEY | Private key for response signing and message decryption (encoded into bas64) (`required`) |
+key | KEY | Private key for response signing and message decryption (`required`) |
 key-password | KEY-PASSWORD | Passphrase for the private key |
 address| ADDRESS | Virgil Auth service address (`by default :8080`)
 authority-id | AUTHORITY_ID | Authority card id (`by default used Virgil Cards Service ID`)
-authority-pubkey | AUTHORITY_PUBKEY | Authority public key (encoded into bas64) (`by default used Virgil Cards Service Public key`)
+authority-pubkey | AUTHORITY_PUBKEY | Authority public key (`by default used Virgil Cards Service Public key`)
 
 # Appendix C. Links
 The service was inspired by OAuth 2.0 and CHAP as a handshake protocol

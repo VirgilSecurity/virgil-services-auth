@@ -1,7 +1,6 @@
 package app
 
 import (
-	"encoding/base64"
 	"log"
 	"os"
 
@@ -52,11 +51,7 @@ func Init(conf Config) {
 	}
 	db := session.DB("auth")
 
-	b, err := base64.StdEncoding.DecodeString(conf.PrivateServiceKey.Key)
-	if err != nil {
-		logger.Fatalf("Cannot decode key from base64 string: %+v", err)
-	}
-	privk, err := virgil.Crypto().ImportPrivateKey(b, conf.PrivateServiceKey.Passowrd)
+	privk, err := virgil.Crypto().ImportPrivateKey([]byte(conf.PrivateServiceKey.Key), conf.PrivateServiceKey.Passowrd)
 	if err != nil {
 		logger.Fatalf("Cannot import private.key: %+v", err)
 	}
@@ -70,12 +65,7 @@ func Init(conf Config) {
 		clientOptions = append(clientOptions, virgil.ClientTransport(virgilhttp.NewTransportClient(conf.VirgilClient.Host, conf.VirgilClient.Host, conf.VirgilClient.Host, conf.VirgilClient.Host)))
 	}
 	if conf.VirgilClient.AuthorityCardID != "" && conf.VirgilClient.AuthorityPublicKey != "" {
-		b, err = base64.StdEncoding.DecodeString(conf.VirgilClient.AuthorityPublicKey)
-		if err != nil {
-			logger.Fatalf("Cannot decode authpubkey from base64 string: %+v", err)
-		}
-
-		pub, err := virgil.Crypto().ImportPublicKey(b)
+		pub, err := virgil.Crypto().ImportPublicKey([]byte(conf.VirgilClient.AuthorityPublicKey))
 		if err != nil {
 			logger.Fatalf("Cannot import authority public key: %v", err)
 		}
