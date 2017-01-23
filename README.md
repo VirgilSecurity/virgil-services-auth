@@ -226,7 +226,7 @@ $ docker start virgil-auth
 
 To test:
 ```
-$ curl http://localhost:8080/health/status -v
+$ curl http://localhost/health/status -v
 ```
 
 ## Settings
