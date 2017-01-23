@@ -340,8 +340,11 @@ func TestHealthInfo(t *testing.T) {
 	resp.Body.Close()
 	health := make(map[string]healthInfo)
 	json.Unmarshal(b, &health)
-	info := health["mongo"]
-	assert.Equal(t, http.StatusOK, info.Status)
+	mongo := health["mongo"]
+	assert.Equal(t, http.StatusOK, mongo.Status)
+	cards := health["cards-service"]
+	assert.Equal(t, http.StatusOK, cards.Status)
+
 }
 
 func TestGetMessage_CardNotGlobal_ReturnErr(t *testing.T) {

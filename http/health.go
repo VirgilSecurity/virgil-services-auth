@@ -17,11 +17,11 @@ type HealthResult struct {
 	Info   map[string]interface{}
 }
 
-type HealthChekcer struct {
+type HealthChecker struct {
 	CheckList []Checker
 }
 
-func (h *HealthChekcer) Status(ctx *fasthttp.RequestCtx) {
+func (h *HealthChecker) Status(ctx *fasthttp.RequestCtx) {
 	r := h.Check()
 	for _, v := range r {
 		if v.Status != fasthttp.StatusOK {
@@ -32,7 +32,7 @@ func (h *HealthChekcer) Status(ctx *fasthttp.RequestCtx) {
 	ctx.SetStatusCode(fasthttp.StatusOK)
 }
 
-func (h *HealthChekcer) Info(ctx *fasthttp.RequestCtx) {
+func (h *HealthChecker) Info(ctx *fasthttp.RequestCtx) {
 	resp := make(map[string]interface{})
 	r := h.Check()
 	ctx.SetStatusCode(fasthttp.StatusOK)
@@ -51,7 +51,7 @@ func (h *HealthChekcer) Info(ctx *fasthttp.RequestCtx) {
 	ctx.Write(b)
 }
 
-func (h *HealthChekcer) Check() []HealthResult {
+func (h *HealthChecker) Check() []HealthResult {
 	r := make([]HealthResult, 0)
 	for _, v := range h.CheckList {
 		m := HealthResult{}

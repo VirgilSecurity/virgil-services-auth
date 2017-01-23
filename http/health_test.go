@@ -29,7 +29,7 @@ func TestStatus_CheckerReturnErr_ReturnBadRequest(t *testing.T) {
 	c := &FakeChecker{}
 	c.On("Name").Return("test")
 	c.On("Info").Return(nil, fmt.Errorf("error"))
-	h := HealthChekcer{CheckList: []Checker{c}}
+	h := HealthChecker{CheckList: []Checker{c}}
 	ctx := makeRequestCtx(nil)
 	h.Status(ctx)
 
@@ -40,7 +40,7 @@ func TestStatus_CheckerInfo_ReturnOk(t *testing.T) {
 	c := &FakeChecker{}
 	c.On("Name").Return("test")
 	c.On("Info").Return(nil, nil)
-	h := HealthChekcer{CheckList: []Checker{c}}
+	h := HealthChecker{CheckList: []Checker{c}}
 	ctx := makeRequestCtx(nil)
 	h.Status(ctx)
 
@@ -56,7 +56,7 @@ func TestInfo_CheckerReturnErr_ReturnBadRequest(t *testing.T) {
 	c := &FakeChecker{}
 	c.On("Name").Return("test")
 	c.On("Info").Return(nil, fmt.Errorf("error"))
-	h := HealthChekcer{CheckList: []Checker{c}}
+	h := HealthChecker{CheckList: []Checker{c}}
 	ctx := makeRequestCtx(nil)
 	h.Info(ctx)
 
@@ -74,7 +74,7 @@ func TestInfo_CheckerInfo_ReturnOk(t *testing.T) {
 	c := &FakeChecker{}
 	c.On("Name").Return("test")
 	c.On("Info").Return(map[string]interface{}{"latency": 12}, nil)
-	h := HealthChekcer{CheckList: []Checker{c}}
+	h := HealthChecker{CheckList: []Checker{c}}
 	ctx := makeRequestCtx(nil)
 	h.Info(ctx)
 

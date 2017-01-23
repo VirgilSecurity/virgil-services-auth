@@ -89,6 +89,11 @@ func Init(conf Config) {
 		logger.Fatalf("Cannot create virgil client: %+v", err)
 	}
 
+	var checkCardId = conf.VirgilClient.AuthorityCardID
+	if checkCardId == "" {
+		checkCardId = "3e29d43373348cfb373b7eae189214dc01d7237765e572db685839b64adca853" // Virgil Card service
+	}
+
 	routing := http.Router{
 		Auth: &http.Auth{
 			Handler: &handlers.Auth{
@@ -121,10 +126,14 @@ func Init(conf Config) {
 				Client: virgilClient,
 			},
 		},
-		HealthChecker: &http.HealthChekcer{
+		HealthChecker: &http.HealthChecker{
 			CheckList: []http.Checker{
 				&repo.HealthChecker{
 					S: session,
+				},
+				&services.CardsServiceHealthChecker{
+					Vclient: virgilClient,
+					CardId:  checkCardId,
 				},
 			},
 		},

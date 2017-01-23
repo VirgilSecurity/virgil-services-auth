@@ -9,7 +9,7 @@ import (
 type Router struct {
 	Grant         *Grant
 	Auth          *Auth
-	HealthChecker *HealthChekcer
+	HealthChecker *HealthChecker
 }
 
 func (r *Router) Handler(ctx *fasthttp.RequestCtx) {
