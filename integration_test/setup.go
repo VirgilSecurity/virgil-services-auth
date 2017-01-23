@@ -54,7 +54,7 @@ func setupDB(dbconn string) {
 
 	session, err := mgo.Dial(dbconn)
 	if err != nil {
-		fmt.Println("Cannot generate Keypair")
+		fmt.Println("Cannot connect to db:", err)
 		os.Exit(1)
 	}
 	config.session = session
@@ -63,12 +63,12 @@ func setupDB(dbconn string) {
 func setupAuthority() {
 	keyPair, err := config.Crypto.GenerateKeypair()
 	if err != nil {
-		fmt.Println("Cannot generate Keypair")
+		fmt.Println("Authority cannot generate Keypair:", err)
 		os.Exit(1)
 	}
 	req, err := virgil.NewCreateCardRequest("root", "type", keyPair.PublicKey(), virgil.CardParams{})
 	if err != nil {
-		fmt.Println("Cannot generate Keypair")
+		fmt.Println("Authority create card request:", err)
 		os.Exit(1)
 	}
 
@@ -90,12 +90,12 @@ func setupAuthority() {
 func setupClient() {
 	keyPair, err := config.Crypto.GenerateKeypair()
 	if err != nil {
-		fmt.Println("Cannot generate Keypair")
+		fmt.Println("Client cannot generate Keypair:", err)
 		os.Exit(1)
 	}
 	req, err := virgil.NewCreateCardRequest("bob", "type", keyPair.PublicKey(), virgil.CardParams{})
 	if err != nil {
-		fmt.Println("Cannot generate Keypair")
+		fmt.Println("Client create card request:", err)
 		os.Exit(1)
 	}
 
@@ -118,12 +118,12 @@ func setupClient() {
 func setupUntrustedClient() {
 	keyPair, err := config.Crypto.GenerateKeypair()
 	if err != nil {
-		fmt.Println("Cannot generate Keypair")
+		fmt.Println("Untrusted client cannot generate Keypair:", err)
 		os.Exit(1)
 	}
 	req, err := virgil.NewCreateCardRequest("bob", "type", keyPair.PublicKey(), virgil.CardParams{})
 	if err != nil {
-		fmt.Println("Cannot generate Keypair")
+		fmt.Println("Untrusted client create card request:", err)
 		os.Exit(1)
 	}
 
@@ -189,7 +189,7 @@ func setupAuthService() {
 		fmt.Println("Cannot start listen a fake cards service")
 		os.Exit(1)
 	}
-	priv, err := config.authServiceKeyPair.PrivateKey().Encode([]byte(""))
+	priv, err := config.authServiceKeyPair.PrivateKey().Encode([]byte("123"))
 	if err != nil {
 		fmt.Println("Cannot start listen a fake cards service")
 		os.Exit(1)
@@ -202,7 +202,10 @@ func setupAuthService() {
 			AuthorityCardID:    config.authority.Card.ID,
 			AuthorityPublicKey: base64.StdEncoding.EncodeToString(pub),
 		},
-		PrivateServiceKey: base64.StdEncoding.EncodeToString(priv),
+		PrivateServiceKey: app.PrivateKey{
+			Key:      base64.StdEncoding.EncodeToString(priv),
+			Passowrd: "123",
+		},
 	})
 	go app.Run(":8080")
 }

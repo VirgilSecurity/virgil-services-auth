@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 
 	authKeyPair, err := config.Crypto.GenerateKeypair()
 	if err != nil {
-		fmt.Println("Cannot generate Keypair")
+		fmt.Println("Cannot generate Keypair:", err)
 		os.Exit(1)
 	}
 	config.authServiceKeyPair = authKeyPair

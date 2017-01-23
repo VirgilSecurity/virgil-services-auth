@@ -23,10 +23,14 @@ type VirgilClient struct {
 	AuthorityCardID    string
 	AuthorityPublicKey string
 }
+type PrivateKey struct {
+	Key      string
+	Passowrd string
+}
 type Config struct {
 	DBConnection      string
 	VirgilClient      VirgilClient
-	PrivateServiceKey string
+	PrivateServiceKey PrivateKey
 }
 
 var (
@@ -38,7 +42,7 @@ func Init(conf Config) {
 	logger = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 	virgilcrypto.DefaultCrypto = &crypto.NativeCrypto{}
 
-	if conf.DBConnection == "" || conf.VirgilClient.Token == "" || conf.PrivateServiceKey == "" {
+	if conf.DBConnection == "" || conf.VirgilClient.Token == "" || conf.PrivateServiceKey.Key == "" {
 		logger.Fatalf("Required arguments were not filled. Run '[CMD] --help' for more information. Required arguments are marked *")
 	}
 
@@ -48,11 +52,11 @@ func Init(conf Config) {
 	}
 	db := session.DB("auth")
 
-	b, err := base64.StdEncoding.DecodeString(conf.PrivateServiceKey)
+	b, err := base64.StdEncoding.DecodeString(conf.PrivateServiceKey.Key)
 	if err != nil {
 		logger.Fatalf("Cannot decode key from base64 string: %+v", err)
 	}
-	privk, err := virgil.Crypto().ImportPrivateKey(b, "")
+	privk, err := virgil.Crypto().ImportPrivateKey(b, conf.PrivateServiceKey.Passowrd)
 	if err != nil {
 		logger.Fatalf("Cannot import private.key: %+v", err)
 	}
