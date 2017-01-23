@@ -224,6 +224,11 @@ $ docker run --name=virgil-auth -p 80:8080 --net host -e TOKEN="{YOUR_VIRGIL_TOK
 $ docker start virgil-auth
 ```
 
+To test:
+```
+$ curl http://localhost:8080/health/status -v
+```
+
 ## Settings
 
 Most of settings are obvious and easy to understand, but some parameters needed more detailed description:
