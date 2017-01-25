@@ -55,4 +55,4 @@ after_seccess:
 branches:
   only:
   - master
-  - /^v\/d+$/
+  - /^v\d+$/
