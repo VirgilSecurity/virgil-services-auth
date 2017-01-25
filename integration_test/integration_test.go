@@ -262,7 +262,7 @@ func TestRefresh_UnsupportedGrantType_ReturnErr(t *testing.T) {
 
 func TestGetToken_CodeExpired_ReturnErr(t *testing.T) {
 	c := MakeClient()
-	codes := config.session.DB("auth").C("code")
+	codes := config.session.DB("").C("code")
 	codes.Insert(db.Code{
 		Code:    "123",
 		OwnerID: "123",
@@ -276,7 +276,7 @@ func TestGetToken_CodeExpired_ReturnErr(t *testing.T) {
 
 func TestGetCode_AttemptExpired_ReturnErr(t *testing.T) {
 	c := MakeClient()
-	attempts := config.session.DB("auth").C("attampt")
+	attempts := config.session.DB("").C("attampt")
 	attempts.Insert(db.Attempt{
 		OwnerID: "123",
 		Message: "secret message",
