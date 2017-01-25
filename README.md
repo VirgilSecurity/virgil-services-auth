@@ -75,7 +75,6 @@ that includes 3 way handshake process described in PPP Challenge Handshake Authe
 To issue an `Authorization Grant` token for a `Client` it's necessary to make sure that the `Client` is valid. A 3 way
 handshake process is used for these purposes. The endpoint requires a `resource_owner_virgil_card_id` request parameter
 that identifies the `Resource Owner`'s `Virgil Card` that must be a signed of trustee service (by default is Vigil Key service's card).
-If scope is not set will be used wildcard (\*)
 
 An endpoint invocation encrypts a message for a resource owner.
 
@@ -193,8 +192,7 @@ Request:
 Response:
 ```json
 {
-    "resource_owner_virgil_card_id": "3e29d43373348cfb373b7eae189214dc01d7237765e572db685839b64adca853",
-    "scope":"search_global search_app"
+    "resource_owner_virgil_card_id": "3e29d43373348cfb373b7eae189214dc01d7237765e572db685839b64adca853"
 }
 ```
 
