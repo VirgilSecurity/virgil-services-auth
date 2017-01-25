@@ -5,7 +5,9 @@ services:
   - mongodb
 env:
   global:
-    - IMAGENAME=virgil-auth-$TRAVIS_BRANCH
+    - IMAGENAME=virgil-auth
+    - BINTRAY_REPOSITORY=virgilsecurity-docker-core.bintray.io/services/$IMAGENAME-$TRAVIS_BRANCH
+    - DOCKERHUB_REPOSITORY=virgilsecurity/$IMAGENAME
 language: go
 
 go:
@@ -21,22 +23,34 @@ install:
 before_script:
   - echo $TRAVIS_COMMIT $TRAVIS_BRANCH
   - DB=127.0.0.1:27017 go test ./... -tags=integration
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
+  - docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
 
 
 script:
   - go build -v --ldflags '-extldflags "-static"' -o main
   - time docker build -t $IMAGENAME --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_BRANCH=$TRAVIS_BRANCH  -f build/Dockerfile .
-  - docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
-  - docker tag $IMAGENAME virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
-  - docker push virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:latest;
-  - docker push virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
+
+  # Push into bintray
+  - docker tag $IMAGENAME $BINTRAY_REPOSITORY:latest;
+  - docker tag $IMAGENAME $BINTRAY_REPOSITORY:$TRAVIS_COMMIT;
+  - docker push $BINTRAY_REPOSITORY:latest;
+  - docker push $BINTRAY_REPOSITORY:$TRAVIS_COMMIT;
+
+  # Push into docker hub
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then
+      docker tag $IMAGENAME $DOCKERHUB_REPOSITORY:latest;
+      docker push $DOCKERHUB_REPOSITORY:latest;
+    else
+      docker tag $IMAGENAME $DOCKERHUB_REPOSITORY:$TRAVIS_BRANCH
+      docker push $DOCKERHUB_REPOSITORY:$TRAVIS_BRANCH
+    fi
 
 after_seccess:
   - docker images
   - docker inspect -f '{{index .ContainerConfig.Labels "git-commit"}}' $IMAGENAME
   - docker inspect -f '{{index .ContainerConfig.Labels "git-branch"}}' $IMAGENAME
-  - echo virgilsecurity-docker-core.bintray.io/services/$IMAGENAME:$TRAVIS_COMMIT;
+  - echo $BINTRAY_REPOSITORY:$TRAVIS_COMMIT;
 
 branches:
   only:
