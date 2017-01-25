@@ -306,7 +306,7 @@ Additional information about the error is returned as JSON-object like:
 # Appendix B. Environment
 Command line arguments (prefix: --)| Environment name | Description
 ---|---|---
-db | DB | Connection string to mongodb (`by default 127.0.0.1:27017`) |
+db | DB | Connection string to mongodb (`by default 127.0.0.1:27017/virgil-auth`) |
 token | TOKEN | Token to get access to Virgil Cards service (`required`)
 cards-address | CARDS_ADDRESS | Address of Cards service (`by default used the Virgil Cards service`)
 key | KEY | Private key for response signing and message decryption (`required`) |

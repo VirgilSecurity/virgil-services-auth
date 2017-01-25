@@ -11,7 +11,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&config.DBConnection, "db", "127.0.0.1:27017", "Connection string to mongodb")
+	flag.StringVar(&config.DBConnection, "db", "127.0.0.1:27017/virgil-auth", "Connection string to mongodb")
 	flag.StringVar(&config.VirgilClient.Token, "token", "", "(*) Token to get access to Virgil Cards service")
 	flag.StringVar(&config.VirgilClient.Host, "cards-address", "", "Address of Cards service. By default used the Virgil Cards service")
 	flag.StringVar(&config.PrivateServiceKey.Key, "key", "", `(*) Private key for response signing and message decryption (encoded into bas64)`)

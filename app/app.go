@@ -49,7 +49,7 @@ func Init(conf Config) {
 	if err != nil {
 		logger.Fatalf("Cannot connect to db: %+v", err)
 	}
-	db := session.DB("auth")
+	db := session.DB("")
 
 	privk, err := virgil.Crypto().ImportPrivateKey([]byte(conf.PrivateServiceKey.Key), conf.PrivateServiceKey.Passowrd)
 	if err != nil {
