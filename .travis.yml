@@ -38,13 +38,13 @@ script:
   - docker push $BINTRAY_REPOSITORY:$TRAVIS_COMMIT;
 
   # Push into docker hub
-  - if [ "$TRAVIS_BRANCH" = "master" ]; then
+  - 'if [ "$TRAVIS_BRANCH" = "master" ]; then
       docker tag $IMAGENAME $DOCKERHUB_REPOSITORY:latest;
       docker push $DOCKERHUB_REPOSITORY:latest;
     else
-      docker tag $IMAGENAME $DOCKERHUB_REPOSITORY:$TRAVIS_BRANCH
-      docker push $DOCKERHUB_REPOSITORY:$TRAVIS_BRANCH
-    fi
+      docker tag $IMAGENAME $DOCKERHUB_REPOSITORY:$TRAVIS_BRANCH;
+      docker push $DOCKERHUB_REPOSITORY:$TRAVIS_BRANCH;
+    fi'
 
 after_seccess:
   - docker images
