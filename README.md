@@ -206,7 +206,7 @@ Install [mongodb](https://www.mongodb.com)
 
 ## Install
 
-Visit [Docker Hub](https://hub.docker.com/virgilsecurity/virgil-auth) see all available images and tags.
+Visit [Docker Hub](https://hub.docker.com/r/virgilsecurity/virgil-auth/) see all available images and tags.
 
 ## Usage
 
