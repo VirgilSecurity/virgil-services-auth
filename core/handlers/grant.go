@@ -41,7 +41,7 @@ func (s *Grant) Handshake(resp core.Response, ownerCard core.OwnerCard) {
 			return
 		}
 		if strings.Contains(err.Error(), "does not have signature for verifier ID") || strings.Contains(err.Error(), "signature validation failed") {
-			resp.Error(core.StatusErrorCardNotValided)
+			resp.Error(core.StatusErrorCardInvalid)
 			return
 		}
 		s.Logger.Printf("Handshake[GetCard]: %v", err)

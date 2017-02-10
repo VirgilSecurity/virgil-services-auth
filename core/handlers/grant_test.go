@@ -113,7 +113,7 @@ func TestHandshake_CardNotFound_ReturnCardNotFoundStat(t *testing.T) {
 
 func TestHandshake_CardNotVerified_ReturnCardNotValided(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorCardNotValided).Once()
+	resp.On("Error", core.StatusErrorCardInvalid).Once()
 
 	c := new(FakeCardClient)
 	c.On("GetCard", mock.Anything).Return(nil, fmt.Errorf("Card 1234 does not have signature for verifier ID 123432"))

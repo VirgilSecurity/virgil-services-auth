@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/VirgilSecurity/virgil-services-auth/core"
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
-	"github.com/VirgilSecurity/virgil-services-auth/core"
 )
 
 func makeRequestCtx(body interface{}) *fasthttp.RequestCtx {
@@ -81,7 +81,7 @@ func TestError_OtherErrors_Return400(t *testing.T) {
 		core.StatusErrorCodeWasUsed,
 		core.StatusErrorAccessTokenBroken,
 		core.StatusErrorRefreshTokenNotFound,
-		core.StatusErrorCardNotValided,
+		core.StatusErrorCardInvalid,
 	}
 	for _, v := range table {
 		ctx := makeRequestCtx("body")

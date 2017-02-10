@@ -15,7 +15,7 @@ const (
 	StatusErrorCodeWasUsed                      ResponseStatus = 53070
 	StatusErrorAccessTokenBroken                ResponseStatus = 53080
 	StatusErrorRefreshTokenNotFound             ResponseStatus = 53090
-	StatusErrorCardNotValided                   ResponseStatus = 53100
+	StatusErrorCardInvalid                      ResponseStatus = 53100
 
 	StatusErrorInernalApplicationError ResponseStatus = 10000
 )

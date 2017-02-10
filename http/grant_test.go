@@ -3,8 +3,8 @@ package http
 import (
 	"testing"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/VirgilSecurity/virgil-services-auth/core"
+	"github.com/stretchr/testify/mock"
 )
 
 type FakeGrantService struct {
@@ -52,7 +52,7 @@ func TestHandshake_MethodInvoked(t *testing.T) {
 	}
 	r := makeRequestCtx(ownCard)
 	s := new(FakeGrantService)
-	s.On("Handshake", mock.Anything, ownCard).Once()
+	s.On("Handshake", mock.Anything, core.OwnerCard{ID: "id", Scope: "*"}).Once()
 	g := Grant{Handler: s}
 	g.Handshake(r)
 

@@ -350,5 +350,5 @@ func TestHealthInfo(t *testing.T) {
 func TestGetMessage_CardNotGlobal_ReturnErr(t *testing.T) {
 	c := MakeClient()
 	_, err := c.GetMessage(config.untrustedClient.Card.ID)
-	assert.Equal(t, &errorResponse{StatusCode: http.StatusBadRequest, Code: core.StatusErrorCardNotValided}, err)
+	assert.Equal(t, &errorResponse{StatusCode: http.StatusBadRequest, Code: core.StatusErrorCardInvalid}, err)
 }
