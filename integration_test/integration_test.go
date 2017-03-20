@@ -4,6 +4,8 @@ package integration
 
 import (
 	"bytes"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -20,7 +22,6 @@ import (
 	"github.com/VirgilSecurity/virgil-services-auth/db/repo"
 	"github.com/stretchr/testify/assert"
 	jwt "gopkg.in/dgrijalva/jwt-go.v3"
-	crypto "gopkg.in/virgilsecurity/virgil-crypto-go.v4"
 
 	"github.com/namsral/flag"
 )
@@ -36,7 +37,6 @@ func init() {
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	virgilcrypto.DefaultCrypto = &crypto.NativeCrypto{}
 	config.Crypto = virgilcrypto.DefaultCrypto
 	setupDB(dbConnection)
 	setupAuthority()
@@ -261,26 +261,36 @@ func TestRefresh_UnsupportedGrantType_ReturnErr(t *testing.T) {
 }
 
 func TestGetToken_CodeExpired_ReturnErr(t *testing.T) {
+	cb := make([]byte, 32)
+	rand.Read(cb)
+	code := hex.EncodeToString(cb)
+
 	c := MakeClient()
+
 	codes := config.session.DB("").C("code")
 	codes.Insert(db.Code{
-		Code:    "123",
+		Code:    code,
 		OwnerID: "123",
 		Used:    false,
 		Expired: time.Now().UTC().Add(-repo.CodeExpiresIn),
 	})
-
-	_, err := c.GetToken("123")
+	cccc := new(db.Code)
+	codes.FindId(code).One(cccc)
+	_, err := c.GetToken(code)
 	assert.Equal(t, &errorResponse{Code: core.StatusErrorCodeExpired, StatusCode: http.StatusBadRequest}, err)
 }
 
 func TestGetCode_AttemptExpired_ReturnErr(t *testing.T) {
+	cb := make([]byte, 32)
+	rand.Read(cb)
+	code := hex.EncodeToString(cb)
+
 	c := MakeClient()
 	attempts := config.session.DB("").C("attampt")
 	attempts.Insert(db.Attempt{
 		OwnerID: "123",
 		Message: "secret message",
-		ID:      "attempt_id",
+		ID:      code,
 		Expired: time.Now().UTC().Add(-repo.AttemptExpiresIn),
 	})
 
@@ -289,7 +299,7 @@ func TestGetCode_AttemptExpired_ReturnErr(t *testing.T) {
 
 	_, err = c.GetCode(core.EncryptedMessage{
 		Message:   eMsg,
-		AttemptId: "attempt_id",
+		AttemptId: code,
 	})
 
 	assert.Equal(t, &errorResponse{StatusCode: http.StatusNotFound}, err)
