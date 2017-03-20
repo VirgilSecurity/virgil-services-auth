@@ -194,7 +194,7 @@ func Test_GetTokenByOneCode_ReturnErr(t *testing.T) {
 }
 
 func TestGetMessage_ReqBodyNil_ReturnErr(t *testing.T) {
-	resp, err := http.Post("http://localhost:8080/authorization-grant/actions/get-challenge-message", "application/json", nil)
+	resp, err := http.Post("http://localhost:8080/v4/authorization-grant/actions/get-challenge-message", "application/json", nil)
 	assert.Nil(t, err)
 	defer resp.Body.Close()
 
@@ -209,7 +209,7 @@ func TestGetMessage_ReqBodyNil_ReturnErr(t *testing.T) {
 }
 
 func TestGetMessage_ReqBodyIncorrect_ReturnErr(t *testing.T) {
-	resp, err := http.Post("http://localhost:8080/authorization-grant/actions/get-challenge-message", "application/json", ioutil.NopCloser(strings.NewReader("{}")))
+	resp, err := http.Post("http://localhost:8080/v4/authorization-grant/actions/get-challenge-message", "application/json", ioutil.NopCloser(strings.NewReader("{}")))
 	assert.Nil(t, err)
 	defer resp.Body.Close()
 
@@ -228,7 +228,7 @@ func TestGetToken_UnsupportedGrantType_ReturnErr(t *testing.T) {
 		GrantType: "broken",
 		Code:      "",
 	})
-	resp, err := http.Post("http://localhost:8080/authorization/actions/obtain-access-token", "application/json", ioutil.NopCloser(bytes.NewReader(b)))
+	resp, err := http.Post("http://localhost:8080/v4/authorization/actions/obtain-access-token", "application/json", ioutil.NopCloser(bytes.NewReader(b)))
 	assert.Nil(t, err)
 	defer resp.Body.Close()
 
@@ -246,7 +246,7 @@ func TestRefresh_UnsupportedGrantType_ReturnErr(t *testing.T) {
 	b, _ := json.Marshal(core.Token{
 		Type: "broken",
 	})
-	resp, err := http.Post("http://localhost:8080/authorization/actions/refresh-access-token", "application/json", ioutil.NopCloser(bytes.NewReader(b)))
+	resp, err := http.Post("http://localhost:8080/v4/authorization/actions/refresh-access-token", "application/json", ioutil.NopCloser(bytes.NewReader(b)))
 	assert.Nil(t, err)
 	defer resp.Body.Close()
 

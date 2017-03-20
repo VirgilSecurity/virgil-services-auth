@@ -33,19 +33,19 @@ func (r *Router) Handler(ctx *fasthttp.RequestCtx) {
 	path := string(ctx.Path())
 
 	switch {
-	case path == "/authorization/actions/obtain-access-token":
+	case path == "v4/authorization/actions/obtain-access-token":
 		r.Auth.AccessToken(ctx)
 
-	case path == "/authorization/actions/refresh-access-token":
+	case path == "v4/authorization/actions/refresh-access-token":
 		r.Auth.Refresh(ctx)
 
-	case path == "/authorization/actions/verify":
+	case path == "v4/authorization/actions/verify":
 		r.Auth.Verify(ctx)
 
-	case path == "/authorization-grant/actions/get-challenge-message":
+	case path == "v4/authorization-grant/actions/get-challenge-message":
 		r.Grant.Handshake(ctx)
 
-	case strings.HasPrefix(path, "/authorization-grant/") &&
+	case strings.HasPrefix(path, "v4/authorization-grant/") &&
 		strings.HasSuffix(path, "/actions/acknowledge"):
 		startAuthId, endAuthId := len("/authorization-grant/"), strings.Index(path, "/actions/acknowledge")
 		if startAuthId > endAuthId {
