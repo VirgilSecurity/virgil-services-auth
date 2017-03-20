@@ -23,18 +23,16 @@ build_script:
 
 after_build:
   - mingw32-make build-artifacts
+  - appveyor PushArtifact artf\windows-amd64.zip
 
 test_script:
   - mingw32-make test-all
-
-artifacts:
-  - path: artf\*
 
 deploy:
   provider: GitHub
   auth_token:
     secure: yd+wW9NsDKuXnBFbrPX05jq1YYG1oSTuFnYhizyOMqEjqsV2JAHuN64H+l5rxUZf
-  artifact: artf\*
+  artifact: artf\windows-amd64.zip
   force_update: true
   on:
     appveyor_repo_tag: true        # deploy on tag push only
