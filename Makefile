@@ -105,7 +105,7 @@ docker-inspect:
 # ARTIFACTS SECTION
 .PHONY: build_artifacts
 
-build-artifacts: clean_artifacts $(BUILD_FILE_NAME)
+build-artifacts: clean-artifacts $(BUILD_FILE_NAME)
 	mkdir -p artf/src/$(PROJECT)
 	mv $(BUILD_FILE_NAME) artf/src/$(PROJECT)/
 
