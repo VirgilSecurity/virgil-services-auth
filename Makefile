@@ -3,12 +3,7 @@ IMAGENAME=$(PROJECT)
 DOCKERHUB_REPOSITORY=virgilsecurity/$(IMAGENAME)
 BINTRAY_REPOSITORY=virgilsecurity-docker-core.bintray.io/services/$(IMAGENAME)
 GO_GET=github.com/VirgilSecurity/virgil-services-auth
-
-ifeq ($(OS),Windows_NT)
-TARGET_OS ?= windows
-else
-TARGET_OS ?= $(shell uname -s | tr A-Z a-z)
-endif
+TARGET_OS ?= $(shell go env GOOS)
 
 ifeq ($(TARGET_OS),darwin)
 ARTF_OS_NAME?=macosx

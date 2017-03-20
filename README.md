@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/VirgilSecurity/virgil-services-auth.svg?branch=master)](https://travis-ci.org/VirgilSecurity/virgil-services-auth)
+[![Build status](https://ci.appveyor.com/api/projects/status/r40u6x9iahfbfvlm/branch/master?svg=true)](https://ci.appveyor.com/project/tochka/virgil-services-auth/branch/master)
+
 # Virgil Auth v4.0
 
 VirgilAuth 4.0 focuses on client developer simplicity while providing specific authorization flows for web applications,
