@@ -26,6 +26,7 @@ type PrivateKey struct {
 }
 type Config struct {
 	DBConnection      string
+	Version           string
 	VirgilClient      VirgilClient
 	PrivateServiceKey PrivateKey
 }
@@ -122,6 +123,7 @@ func Init(conf Config) {
 					Vclient: virgilClient,
 					CardId:  checkCardId,
 				},
+				versionChecker{conf.Version},
 			},
 		},
 	}
@@ -132,4 +134,17 @@ func Init(conf Config) {
 
 func Run(address string) {
 	logger.Fatal(server.ListenAndServe(address))
+}
+
+type versionChecker struct {
+	Version string
+}
+
+func (c versionChecker) Name() string {
+	return "info"
+}
+func (c versionChecker) Info() (map[string]interface{}, error) {
+	return map[string]interface{}{
+		"version": c.Version,
+	}, nil
 }

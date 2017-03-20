@@ -5,6 +5,8 @@ BINTRAY_REPOSITORY=virgilsecurity-docker-core.bintray.io/services/$(IMAGENAME)
 GO_GET=github.com/VirgilSecurity/virgil-services-auth
 TARGET_OS ?= $(shell go env GOOS)
 
+VERSION=$(shell git describe --tags --always)
+
 ifeq ($(TARGET_OS),darwin)
 ARTF_OS_NAME?=macosx
 else
@@ -19,12 +21,15 @@ BINARY?=$(PROJECT)
 C_CRYPTO?=true
 endif
 
-BUILD_ARGS=
+
+LDF_FLAGS=-X main.Version=$(VERSION)
+ifneq ($(TARGET_OS),darwin)
+LDF_FLAGS+= -extldflags "-static"
+endif
+
+BUILD_ARGS=--ldflags '$(LDF_FLAGS)'
 ifeq ($(C_CRYPTO),true)
 BUILD_ARGS+=-tags=c_crypto
-endif
-ifneq ($(TARGET_OS),darwin)
-BUILD_ARGS+= --ldflags '-extldflags "-static"'
 endif
 
 .DEFAULT_GOAL := build
