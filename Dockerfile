@@ -8,4 +8,4 @@ LABEL git-branch=$GIT_BRANCH
 ADD main .
 ENV PORT 8080
 EXPOSE 8080
-ENTRYPOINT ["/main"]
+ENTRYPOINT ["/virgil-auth"]
