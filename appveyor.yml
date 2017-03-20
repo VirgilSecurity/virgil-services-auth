@@ -21,7 +21,6 @@ install:
 build_script:
    - mingw32-make
    - mingw32-make build-artifacts
-   - dir artf
 
 test_script:
   - mingw32-make test-all
