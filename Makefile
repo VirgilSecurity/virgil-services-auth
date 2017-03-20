@@ -12,10 +12,10 @@ ARTF_OS_NAME?=$(TARGET_OS)
 endif
 
 ifeq ($(TARGET_OS),windows)
-BUILD_FILE_NAME?=$(PROJECT).exe
+BINARY?=$(PROJECT).exe
 C_CRYPTO=false
 else
-BUILD_FILE_NAME?=$(PROJECT)
+BINARY?=$(PROJECT)
 C_CRYPTO?=true
 endif
 
@@ -52,7 +52,7 @@ test-all:
 .PHONY: clean get build build_in_docker-env
 
 clean:
-	rm $(BUILD_FILE_NAME)
+	rm $(BINARY)
 
 $(GOPATH)/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/virgil_crypto_go.go:
 ifeq ($(C_CRYPTO),true)
@@ -64,10 +64,10 @@ get: $(GOPATH)/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/virgil_crypto_go.
 	go get -v -d -t -tags docker  ./...
 
 build: get
-	CGO_ENABLED=1 GOOS=$(TARGET_OS) go build  $(BUILD_ARGS) -o $(BUILD_FILE_NAME)
+	CGO_ENABLED=1 GOOS=$(TARGET_OS) go build  $(BUILD_ARGS) -o $(BINARY)
 
-$(BUILD_FILE_NAME):
-	CGO_ENABLED=1 GOOS=$(TARGET_OS) go build  $(BUILD_ARGS) -o $(BUILD_FILE_NAME)
+$(BINARY):
+	CGO_ENABLED=1 GOOS=$(TARGET_OS) go build  $(BUILD_ARGS) -o $(BINARY)
 
 
 build-in-docker:
@@ -80,7 +80,7 @@ build-in-docker:
 
 docker-rebuild: build docker-build
 
-docker-build: $(BUILD_FILE_NAME)
+docker-build: $(BINARY)
 	docker build -t $(IMAGENAME) --build-arg GIT_COMMIT=$(GIT_COMMIT) --build-arg GIT_BRANCH=$(GIT_BRANCH) .
 
 docker-publish: docker-dockerhub-publish docker-bintray-publish
@@ -100,9 +100,9 @@ docker-inspect:
 # ARTIFACTS SECTION
 .PHONY: build_artifacts
 
-build-artifacts: clean-artifacts $(BUILD_FILE_NAME)
+build-artifacts: clean-artifacts $(BINARY)
 	mkdir -p artf/src/$(PROJECT)
-	mv $(BUILD_FILE_NAME) artf/src/$(PROJECT)/
+	mv $(BINARY) artf/src/$(PROJECT)/
 
 ifeq ($(TARGET_OS),windows)
 	cd artf/src &&	zip -r ../$(ARTF_OS_NAME)-amd64.zip . &&	cd ../..
