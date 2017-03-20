@@ -5,7 +5,7 @@ ARG GIT_COMMIT=unkown
 ARG GIT_BRANCH=unkown
 LABEL git-commit=$GIT_COMMIT
 LABEL git-branch=$GIT_BRANCH
-ADD main .
+ADD virgil-auth .
 ENV PORT 8080
 EXPOSE 8080
 ENTRYPOINT ["/virgil-auth"]

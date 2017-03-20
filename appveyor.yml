@@ -4,8 +4,12 @@ os: Windows Server 2012 R2
 
 clone_folder: c:\gopath\src\github.com/VirgilSecurity/virgil-services-auth
 
+services:
+  - mongodb
+
 environment:
   GOPATH: c:\gopath
+  DB: 127.0.0.1:27017
 
 pull_requests:
   do_not_increment_build_number: true
