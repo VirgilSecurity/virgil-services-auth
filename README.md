@@ -11,11 +11,11 @@ Security, Inc. and is based on the OAuth2.0 proposal.
 * [Key Terms](#key-terms)
 * [General Information](#general-information)
 * [Endpoints](#endpoints)
-    * [POST /authorization-grant/actions/get-challenge-message](#post-authorization-grantactionsget-challenge-message)
-    * [POST /authorization-grant/{authorization_grant_id}/actions/acknowledge](#post-authorization-grantauthorization-grant-idactionsacknowledge)
-    * [POST /authorization/actions/obtain-access-code](#post-authorizationactionsobtain-access-code)
-    * [POST /authorization/actions/refresh-access-code](#post-authorizationactionsrefresh-access-code)
-    * [POST /authorization/actions/verify](#post-authorizationactionsverify)
+    * [POST /v4/authorization-grant/actions/get-challenge-message](#post-v4authorization-grantactionsget-challenge-message)
+    * [POST /v4/authorization-grant/{authorization_grant_id}/actions/acknowledge](#post-v4authorization-grantauthorization-grant-idactionsacknowledge)
+    * [POST /v4/authorization/actions/obtain-access-code](#post-v4authorizationactionsobtain-access-code)
+    * [POST /v4/authorization/actions/refresh-access-code](#post-v4authorizationactionsrefresh-access-code)
+    * [POST /v4/authorization/actions/verify](#post-v4authorizationactionsverify)
 * [Get in start](#get-in-start)
     * [Prepare](#prepare)
     * [Install](#install)
@@ -70,7 +70,7 @@ that includes 3 way handshake process described in PPP Challenge Handshake Authe
 
 
 
-### POST /authorization-grant/actions/get-challenge-message
+### POST /v4/authorization-grant/actions/get-challenge-message
 
 To issue an `Authorization Grant` token for a `Client` it's necessary to make sure that the `Client` is valid. A 3 way
 handshake process is used for these purposes. The endpoint requires a `resource_owner_virgil_card_id` request parameter
@@ -104,7 +104,7 @@ Encrypted message is some random string that was encrypted for the `resource_own
 
 
 
-### POST /authorization-grant/{authorization_grant_id}/actions/acknowledge
+### POST /v4/authorization-grant/{authorization_grant_id}/actions/acknowledge
 
 Acknowledges that `Resource Owner` holds valid Private Key and receives an `Authorization Grant` token in response.
 **encrypted_message** is a decrypted message from the previous step and re-encrypted with a Virgil Auth public key.
@@ -133,7 +133,7 @@ com.VirgilSecurity.keys_virgil_card[65bce698-b7be-46d3-941b-66936b235314,05e22b5
 
 
 
-### POST /authorization/actions/obtain-access-token
+### POST /v4/authorization/actions/obtain-access-token
 
 The endpoint purpose is to exchange an `Authorization Grant` token from the previous step on a valid `Access Token`.
 
@@ -157,7 +157,7 @@ Response:
 
 
 
-### POST /authorization/actions/refresh-access-token
+### POST /v4/authorization/actions/refresh-access-token
 
 The endpoint purpose is to generate a new `Access Token` using previously retrieved `Refresh Token`.
 
@@ -178,7 +178,7 @@ Response:
 ```
 
 
-### POST /authorization/actions/verify
+### POST /v4/authorization/actions/verify
 
 This endpoint is used by `Resource Server`s to verify an `Access Token` provided as an authorization grant.
 
