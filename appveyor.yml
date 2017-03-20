@@ -20,7 +20,9 @@ install:
 
 build_script:
    - mingw32-make
-   - mingw32-make build-artifacts
+
+after_build:
+  - mingw32-make build-artifacts
 
 test_script:
   - mingw32-make test-all
