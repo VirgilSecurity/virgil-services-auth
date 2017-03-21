@@ -4,7 +4,6 @@ DOCKERHUB_REPOSITORY=virgilsecurity/$(IMAGENAME)
 BINTRAY_REPOSITORY=virgilsecurity-docker-core.bintray.io/services/$(IMAGENAME)
 GO_GET=github.com/VirgilSecurity/virgil-services-auth
 TARGET_OS ?= $(shell go env GOOS)
-
 VERSION=$(shell git describe --tags --always)
 
 ifeq ($(TARGET_OS),darwin)
@@ -86,7 +85,7 @@ build-in-docker:
 docker-rebuild: build docker-build
 
 docker-build: $(BINARY)
-	docker build -t $(IMAGENAME) --build-arg GIT_COMMIT=$(GIT_COMMIT) --build-arg GIT_BRANCH=$(GIT_BRANCH) .
+	docker build -t $(IMAGENAME) --build-arg VERSION=$(VERSION) .
 
 docker-publish: docker-dockerhub-publish docker-bintray-publish
 
@@ -99,8 +98,7 @@ docker-bintray-publish:
 		docker push $(DOCKERHUB_REPOSITORY)
 
 docker-inspect:
-	docker inspect -f '{{index .ContainerConfig.Labels "git-commit"}}' $(IMAGENAME)
-	docker inspect -f '{{index .ContainerConfig.Labels "git-branch"}}' $(IMAGENAME)
+	docker inspect -f '{{index .ContainerConfig.Labels "version"}}' $(IMAGENAME)
 
 # ARTIFACTS SECTION
 .PHONY: build_artifacts
