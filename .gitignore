@@ -14,3 +14,5 @@ storage/*
 .env
 config/key-pair/public-key
 config/key-pair/private-key
+virgil-auth*
+artf

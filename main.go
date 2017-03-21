@@ -7,6 +7,7 @@ import (
 
 var (
 	config  app.Config
+	Version string
 	address string
 )
 
@@ -22,6 +23,7 @@ func init() {
 }
 
 func main() {
+	config.Version = Version
 	flag.Parse()
 	app.Init(config)
 	app.Run(address)

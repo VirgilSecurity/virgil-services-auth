@@ -1,0 +1,38 @@
+version: "{build}"
+
+os: Windows Server 2012 R2
+
+clone_folder: c:\gopath\src\github.com/VirgilSecurity/virgil-services-auth
+
+services:
+  - mongodb
+
+environment:
+  GOPATH: c:\gopath
+  DB: 127.0.0.1:27017
+
+pull_requests:
+  do_not_increment_build_number: true
+
+install:
+  - set PATH=%GOPATH%\bin;c:\go\bin;c:\msys64\mingw64\bin\;c:\MinGW\msys\1.0\bin;%PATH%
+  - mingw32-make get
+
+build_script:
+   - mingw32-make
+
+after_build:
+  - mingw32-make build-artifacts
+  - appveyor PushArtifact artf\windows-amd64.zip
+
+test_script:
+  - mingw32-make test-all
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: yd+wW9NsDKuXnBFbrPX05jq1YYG1oSTuFnYhizyOMqEjqsV2JAHuN64H+l5rxUZf
+  artifact: windows-amd64.zip
+  force_update: true
+  on:
+    appveyor_repo_tag: true        # deploy on tag push only
