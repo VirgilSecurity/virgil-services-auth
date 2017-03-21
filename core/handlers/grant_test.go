@@ -6,6 +6,7 @@ import (
 	"time"
 
 	virgil "gopkg.in/virgil.v4"
+	"gopkg.in/virgil.v4/errors"
 	"gopkg.in/virgil.v4/virgilcrypto"
 
 	"github.com/VirgilSecurity/virgil-services-auth/core"
@@ -104,6 +105,32 @@ func TestHandshake_CardNotFound_ReturnCardNotFoundStat(t *testing.T) {
 
 	c := new(FakeCardClient)
 	c.On("GetCard", mock.Anything).Return(nil, virgil.ErrNotFound)
+
+	s := Grant{Client: c}
+	s.Handshake(resp, core.OwnerCard{ID: "id"})
+
+	resp.AssertExpectations(t)
+}
+
+func TestHandshake_CardProtected401_ReturnCardNotFoundStat(t *testing.T) {
+	resp := new(FakeResponse)
+	resp.On("Error", core.StatusErrorCardNotFound).Once()
+
+	c := new(FakeCardClient)
+	c.On("GetCard", mock.Anything).Return(nil, errors.NewServiceError(20300, 401, ""))
+
+	s := Grant{Client: c}
+	s.Handshake(resp, core.OwnerCard{ID: "id"})
+
+	resp.AssertExpectations(t)
+}
+
+func TestHandshake_CardProtected403_ReturnCardNotFoundStat(t *testing.T) {
+	resp := new(FakeResponse)
+	resp.On("Error", core.StatusErrorCardNotFound).Once()
+
+	c := new(FakeCardClient)
+	c.On("GetCard", mock.Anything).Return(nil, errors.NewServiceError(20500, 403, ""))
 
 	s := Grant{Client: c}
 	s.Handshake(resp, core.OwnerCard{ID: "id"})
