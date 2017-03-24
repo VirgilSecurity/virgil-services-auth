@@ -158,7 +158,7 @@ Response:
 }
 ```
 
-> NOTE: "expires_in" parameter measured by seconds
+> NOTE: "expires_in" parameter is measured by seconds
 
 
 ### POST /v4/authorization/actions/refresh-access-token
