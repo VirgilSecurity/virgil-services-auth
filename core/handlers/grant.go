@@ -43,7 +43,7 @@ func (s *Grant) Handshake(resp core.Response, ownerCard core.OwnerCard) {
 			}
 			// Card found but permission denied
 			if verr.IsHTTPError() && (verr.HTTPErrorCode() == 401 || verr.HTTPErrorCode() == 403) {
-				resp.Error(core.StatusErrorCardNotFound)
+				resp.Error(core.StatusErrorCardProtected)
 				return
 			}
 		}

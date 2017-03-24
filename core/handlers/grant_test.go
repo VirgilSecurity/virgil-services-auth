@@ -114,7 +114,7 @@ func TestHandshake_CardNotFound_ReturnCardNotFoundStat(t *testing.T) {
 
 func TestHandshake_CardProtected401_ReturnCardNotFoundStat(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorCardNotFound).Once()
+	resp.On("Error", core.StatusErrorCardProtected).Once()
 
 	c := new(FakeCardClient)
 	c.On("GetCard", mock.Anything).Return(nil, errors.NewServiceError(20300, 401, ""))
@@ -127,7 +127,7 @@ func TestHandshake_CardProtected401_ReturnCardNotFoundStat(t *testing.T) {
 
 func TestHandshake_CardProtected403_ReturnCardNotFoundStat(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorCardNotFound).Once()
+	resp.On("Error", core.StatusErrorCardProtected).Once()
 
 	c := new(FakeCardClient)
 	c.On("GetCard", mock.Anything).Return(nil, errors.NewServiceError(20500, 403, ""))

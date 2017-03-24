@@ -7,6 +7,7 @@ const (
 
 	StatusErrorUUIDValidFailed                  ResponseStatus = 53000
 	StatusErrorCardNotFound                     ResponseStatus = 53010
+	StatusErrorCardProtected                    ResponseStatus = 53011
 	StatusErrorEncryptedMessageValidationFailed ResponseStatus = 53020
 	StatusErrorAccessTokenExpired               ResponseStatus = 53030
 	StatusErrorUnsupportedGrantType             ResponseStatus = 53040
