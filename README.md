@@ -153,11 +153,12 @@ Response:
 {
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ",
     "refresh_token": "dBJpvmX8oG52TkBJc7msyh3LuevuQ8JK9sNOp7b2UvY",
-    "expires_in": "3600",
+    "expires_in": 3600,
     "token_type": "bearer"
 }
 ```
 
+> NOTE: "expires_in" parameter is measured by seconds
 
 
 ### POST /v4/authorization/actions/refresh-access-token
