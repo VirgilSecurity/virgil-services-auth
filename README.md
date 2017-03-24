@@ -179,7 +179,7 @@ Response:
     "expires_in": 3600
 }
 ```
-
+>NOTE: "expires_in" parameter measured in seconds
 
 ### POST /v4/authorization/actions/verify
 
