@@ -353,7 +353,7 @@ func TestAcknowledge_ReturnVal(t *testing.T) {
 	)
 
 	resp := new(FakeResponse)
-	resp.On("Success", &core.AccessCode{Code: code}).Once()
+	resp.On("Success", map[string]string{"code": code}).Once()
 
 	a := new(FakeAttemptRepo)
 	a.On("Get", attemtID).Return(&db.Attempt{Expired: time.Now().Add(10 * time.Minute), OwnerID: ownerID, Message: plainMsg, Scope: scope}, nil)

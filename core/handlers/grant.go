@@ -106,5 +106,5 @@ func (s *Grant) Acknowledge(resp core.Response, msg core.EncryptedMessage) {
 		resp.Error(core.StatusErrorInernalApplicationError)
 		return
 	}
-	resp.Success(&core.AccessCode{Code: code.Code})
+	resp.Success(map[string]string{"code": code.Code})
 }
