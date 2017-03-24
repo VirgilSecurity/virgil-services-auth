@@ -292,8 +292,9 @@ Additional information about the error is returned as JSON-object like:
 
 **`HTTP 400. Request error`** status is returned on request data validation errors
 ```
-53000 - The resource owner uuid validation failed
-53010 - The Virgil card specified by Uuid doesn't exist on the Virgil Keys service
+53000 - The resource owner id validation failed
+53010 - The Virgil card specified by id doesn't exist on the Virgil Card service
+53011 - The Auth service cannot get access to the Virgil card specified by id. The card in application scope and can't be retrieved
 53020 - Encrypted message validation failed
 53030 - The authentication attempt instance has expired already
 53040 - Grant type is not supported as it is outside of the list: ['authorization_code']
