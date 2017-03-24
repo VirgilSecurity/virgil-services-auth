@@ -3,8 +3,8 @@ package http
 import (
 	"encoding/json"
 
-	"github.com/valyala/fasthttp"
 	"github.com/VirgilSecurity/virgil-services-auth/core"
+	"github.com/valyala/fasthttp"
 )
 
 type Auth struct {
@@ -24,16 +24,21 @@ func (c *Auth) AccessToken(ctx *fasthttp.RequestCtx) {
 	c.Handler.AccessToken(resp, ac)
 }
 
+type refreshToken struct {
+	Refresh   string `json:"refresh_token,omitted"`
+	GrantType string `json:"grant_type,omitted"`
+}
+
 func (c *Auth) Refresh(ctx *fasthttp.RequestCtx) {
 	resp := &response{ctx: ctx}
 
-	var t core.Token
+	var t refreshToken
 	err := json.Unmarshal(ctx.PostBody(), &t)
 	if err != nil {
 		resp.Error(core.StatusErrorRefreshTokenNotFound)
 		return
 	}
-	c.Handler.Refresh(resp, t.Type, t.Refresh)
+	c.Handler.Refresh(resp, t.GrantType, t.Refresh)
 }
 
 func (c *Auth) Verify(ctx *fasthttp.RequestCtx) {
