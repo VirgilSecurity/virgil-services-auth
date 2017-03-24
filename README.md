@@ -61,7 +61,7 @@ with it.
 
 
 ## General information
-* The service's application identity value is **com.VirgilSecurity.auth**, so the public card can be found on the
+* The service's application identity value is **com.virgilsecurity.auth**, so the public card can be found on the
  Virgil Card service using */card/{card-id}* endpoint.
 
 
