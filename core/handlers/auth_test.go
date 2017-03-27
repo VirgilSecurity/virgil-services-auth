@@ -273,7 +273,7 @@ func TestRefresh_ReturnVal(t *testing.T) {
 		refreshToken = "referesh token"
 		ownerID      = "owner id"
 	)
-	expected := &core.Token{
+	expected := &core.RefreshAccessToken{
 		Token:     "token",
 		ExpiresIn: 600,
 	}

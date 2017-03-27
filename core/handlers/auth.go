@@ -82,7 +82,7 @@ func (s *Auth) Refresh(resp core.Response, grantType string, token string) {
 		resp.Error(core.StatusErrorInernalApplicationError)
 		return
 	}
-	resp.Success(&core.Token{
+	resp.Success(&core.RefreshAccessToken{
 		Token:     accessToken.Token,
 		ExpiresIn: accessToken.ExpiresIn,
 	})
