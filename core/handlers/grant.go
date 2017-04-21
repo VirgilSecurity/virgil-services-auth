@@ -6,8 +6,8 @@ import (
 
 	"github.com/VirgilSecurity/virgil-services-auth/core"
 	"github.com/VirgilSecurity/virgil-services-auth/db"
-	"github.com/pkg/errors"
 	virgil "gopkg.in/virgil.v4"
+	verrors "gopkg.in/virgil.v4/errors"
 	"gopkg.in/virgil.v4/virgilcrypto"
 )
 
@@ -35,11 +35,19 @@ type Grant struct {
 func (s *Grant) Handshake(resp core.Response, ownerCard core.OwnerCard) {
 	card, err := s.Client.GetCard(ownerCard.ID)
 	if err != nil {
-		verr := errors.Cause(err)
-		if verr == virgil.ErrNotFound {
-			resp.Error(core.StatusErrorCardNotFound)
-			return
+		if verr, ok := verrors.ToSdkError(err); ok {
+			// Card not found
+			if verr == virgil.ErrNotFound {
+				resp.Error(core.StatusErrorCardNotFound)
+				return
+			}
+			// Card found but permission denied
+			if verr.IsHTTPError() && (verr.HTTPErrorCode() == 401 || verr.HTTPErrorCode() == 403) {
+				resp.Error(core.StatusErrorCardProtected)
+				return
+			}
 		}
+
 		if strings.Contains(err.Error(), "does not have signature for verifier ID") || strings.Contains(err.Error(), "signature validation failed") {
 			resp.Error(core.StatusErrorCardInvalid)
 			return
@@ -98,5 +106,5 @@ func (s *Grant) Acknowledge(resp core.Response, msg core.EncryptedMessage) {
 		resp.Error(core.StatusErrorInernalApplicationError)
 		return
 	}
-	resp.Success(&core.AccessCode{Code: code.Code})
+	resp.Success(map[string]string{"code": code.Code})
 }

@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/VirgilSecurity/virgil-services-auth.svg?branch=master)](https://travis-ci.org/VirgilSecurity/virgil-services-auth)
+[![Build status](https://ci.appveyor.com/api/projects/status/r40u6x9iahfbfvlm/branch/master?svg=true)](https://ci.appveyor.com/project/tochka/virgil-services-auth/branch/master)
+
 # Virgil Auth v4.0
 
 VirgilAuth 4.0 focuses on client developer simplicity while providing specific authorization flows for web applications,
@@ -58,7 +61,7 @@ with it.
 
 
 ## General information
-* The service's application identity value is **com.VirgilSecurity.auth**, so the public card can be found on the
+* The service's application identity value is **com.virgilsecurity.auth**, so the public card can be found on the
  Virgil Card service using */card/{card-id}* endpoint.
 
 
@@ -150,11 +153,12 @@ Response:
 {
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ",
     "refresh_token": "dBJpvmX8oG52TkBJc7msyh3LuevuQ8JK9sNOp7b2UvY",
-    "expires_in": "3600",
+    "expires_in": 3600,
     "token_type": "bearer"
 }
 ```
 
+> NOTE: "expires_in" parameter is measured by seconds
 
 
 ### POST /v4/authorization/actions/refresh-access-token
@@ -173,10 +177,10 @@ Response:
 ```json
 {
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ",
-    "expires_in": "3600"
+    "expires_in": 3600
 }
 ```
-
+>NOTE: "expires_in" parameter measured in seconds
 
 ### POST /v4/authorization/actions/verify
 
@@ -231,7 +235,7 @@ $ curl http://localhost/health/status -v
 
 Most of settings are obvious and easy to understand, but some parameters needed more detailed description:
 - *Token:* The access token provides an authenticated secure access to the Virgil services. [How to create access token](https://virgilsecurity.com/docs/faq/add-access-token)
-- *Cards address:* It's address of Virgil [cards service](https://virgilsecurity.com/docs/services/cards/v4.0(latest)/cards-service). It provides interface to search user's card.
+- *Cards address:* It's address of Virgil [cards service](https://virgilsecurity.com/docs/services/cards/v4/cards-service). It provides interface to search user's card.
 - *Authority card:* It's a card whose signature we trust. If this parameter is set up then a client's card **must** have signature of the authority. The parameter contains of two values: card ID card and public key
 
 Full list of parameters in [Appendix B. Environment](#appendix-b-environment).
@@ -288,8 +292,9 @@ Additional information about the error is returned as JSON-object like:
 
 **`HTTP 400. Request error`** status is returned on request data validation errors
 ```
-53000 - The resource owner uuid validation failed
-53010 - The Virgil card specified by Uuid doesn't exist on the Virgil Keys service
+53000 - The resource owner id validation failed
+53010 - The Virgil card specified by id doesn't exist on the Virgil Card service
+53011 - The Auth service cannot get access to the Virgil card specified by id. The card in application scope and can't be retrieved
 53020 - Encrypted message validation failed
 53030 - The authentication attempt instance has expired already
 53040 - Grant type is not supported as it is outside of the list: ['authorization_code']

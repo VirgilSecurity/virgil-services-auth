@@ -83,11 +83,11 @@ func (c *client) GetToken(code string) (*core.Token, error) {
 	return s, nil
 }
 
-func (c *client) Refresh(token string) (*core.Token, error) {
-	s, e := new(core.Token), new(errorResponse)
-	resp, err := c.c.New().Post("v4/authorization/actions/refresh-access-token").BodyJSON(core.Token{
-		Type:    "refresh_token",
-		Refresh: token,
+func (c *client) Refresh(token string) (*core.RefreshAccessToken, error) {
+	s, e := new(core.RefreshAccessToken), new(errorResponse)
+	resp, err := c.c.New().Post("v4/authorization/actions/refresh-access-token").BodyJSON(map[string]string{
+		"grant_type":    "refresh_token",
+		"refresh_token": token,
 	}).Receive(s, e)
 	if err == io.EOF {
 		return nil, &errorResponse{StatusCode: resp.StatusCode}

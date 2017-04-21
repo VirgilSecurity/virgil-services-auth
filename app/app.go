@@ -12,8 +12,6 @@ import (
 	"gopkg.in/mgo.v2"
 	virgil "gopkg.in/virgil.v4"
 	"gopkg.in/virgil.v4/transport/virgilhttp"
-	"gopkg.in/virgil.v4/virgilcrypto"
-	crypto "gopkg.in/virgilsecurity/virgil-crypto-go.v4"
 )
 
 type VirgilClient struct {
@@ -28,6 +26,7 @@ type PrivateKey struct {
 }
 type Config struct {
 	DBConnection      string
+	Version           string
 	VirgilClient      VirgilClient
 	PrivateServiceKey PrivateKey
 }
@@ -39,7 +38,6 @@ var (
 
 func Init(conf Config) {
 	logger = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
-	virgilcrypto.DefaultCrypto = &crypto.NativeCrypto{}
 
 	if conf.DBConnection == "" || conf.VirgilClient.Token == "" || conf.PrivateServiceKey.Key == "" {
 		logger.Fatalf("Required arguments were not filled. Run '[CMD] --help' for more information. Required arguments are marked *")
@@ -125,6 +123,7 @@ func Init(conf Config) {
 					Vclient: virgilClient,
 					CardId:  checkCardId,
 				},
+				versionChecker{conf.Version},
 			},
 		},
 	}
@@ -135,4 +134,17 @@ func Init(conf Config) {
 
 func Run(address string) {
 	logger.Fatal(server.ListenAndServe(address))
+}
+
+type versionChecker struct {
+	Version string
+}
+
+func (c versionChecker) Name() string {
+	return "info"
+}
+func (c versionChecker) Info() (map[string]interface{}, error) {
+	return map[string]interface{}{
+		"version": c.Version,
+	}, nil
 }

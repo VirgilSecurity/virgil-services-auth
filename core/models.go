@@ -12,6 +12,11 @@ type Token struct {
 	Type      string `json:"token_type,omitted"`
 }
 
+type RefreshAccessToken struct {
+	Token     string `json:"access_token,omitted"`
+	ExpiresIn int    `json:"expires_in,omitted"`
+}
+
 type OwnerCard struct {
 	ID    string `json:"resource_owner_virgil_card_id"`
 	Scope string `json:"-"`

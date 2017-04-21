@@ -3,8 +3,8 @@ package http
 import (
 	"testing"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/VirgilSecurity/virgil-services-auth/core"
+	"github.com/stretchr/testify/mock"
 )
 
 type FakeAuthService struct {
@@ -56,13 +56,13 @@ func TestRefresh_BodyIncorrect_ReturnErr(t *testing.T) {
 }
 
 func TestRefresh_MethodInvoked(t *testing.T) {
-	tk := &core.Token{
-		Refresh: "refresh",
-		Type:    "type",
+	tk := map[string]string{
+		"grant_type":    "type",
+		"refresh_token": "refresh",
 	}
 	r := makeRequestCtx(tk)
 	s := new(FakeAuthService)
-	s.On("Refresh", mock.Anything, tk.Type, tk.Refresh).Once()
+	s.On("Refresh", mock.Anything, "type", "refresh").Once()
 
 	g := Auth{Handler: s}
 	g.Refresh(r)

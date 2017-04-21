@@ -1,58 +1,79 @@
-sudo: required
-
-services:
-  - docker
-  - mongodb
-env:
-  global:
-    - IMAGENAME=virgil-auth
-    - BINTRAY_REPOSITORY=virgilsecurity-docker-core.bintray.io/services/$IMAGENAME-$TRAVIS_BRANCH
-    - DOCKERHUB_REPOSITORY=virgilsecurity/$IMAGENAME
-language: go
-
-go:
-  - 1.7.x
+matrix:
+  include:
+# DOCKER && LINUX
+    - os: linux
+      language: go
+      go: 1.7.x
+      dist: trusty
+      sudo: required
+      services:
+            - docker
+            - mongodb
+      env:
+        global:
+          - GIT_BRANCH=$TRAVIS_BRANCH
+          - TARGET_OS=linux
+          - DB=127.0.0.1:27017
+# MACOS
+    - os: osx
+      language: go
+      go: 1.7.5
+      env:
+        global:
+          - TARGET_OS=darwin
+          - DB=127.0.0.1:27017
 
 before_install:
-  - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
-  - ./build/go-get-virgil-crypto.sh
-
-install:
-  - go get -t -u ./...
-
-before_script:
-  - echo $TRAVIS_COMMIT $TRAVIS_BRANCH
-  - DB=127.0.0.1:27017 go test ./... -tags=integration
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
-  - docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
-
-
-script:
-  - go build -v --ldflags '-extldflags "-static"' -o main
-  - time docker build -t $IMAGENAME --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_BRANCH=$TRAVIS_BRANCH  -f build/Dockerfile .
-
-  # Push into bintray
-  - docker tag $IMAGENAME $BINTRAY_REPOSITORY:latest;
-  - docker tag $IMAGENAME $BINTRAY_REPOSITORY:$TRAVIS_COMMIT;
-  - docker push $BINTRAY_REPOSITORY:latest;
-  - docker push $BINTRAY_REPOSITORY:$TRAVIS_COMMIT;
-
-  # Push into docker hub
-  - 'if [ "$TRAVIS_BRANCH" = "master" ]; then
-      docker tag $IMAGENAME $DOCKERHUB_REPOSITORY:latest;
-      docker push $DOCKERHUB_REPOSITORY:latest;
-    else
-      docker tag $IMAGENAME $DOCKERHUB_REPOSITORY:$TRAVIS_BRANCH;
-      docker push $DOCKERHUB_REPOSITORY:$TRAVIS_BRANCH;
+  - if [[ "$TARGET_OS" == "darwin" ]]; then
+      brew update;
+      brew install swig mongodb;
+      brew tap homebrew/services;
+      brew services start mongodb;
+    fi
+  - 'if [ "$TARGET_OS" = "linux" ]; then
+      echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc;
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
+      docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD";
+      go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v4;
+      wget https://cdn.virgilsecurity.com/crypto-go/virgil-crypto-2.0.4-go-linux-x86_64.tgz;
+      tar -xvf virgil-crypto-2.0.4-go-linux-x86_64.tgz --strip-components=1 -C $GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/;
+      rm virgil-crypto-2.0.4-go-linux-x86_64.tgz;
     fi'
 
-after_seccess:
-  - docker images
-  - docker inspect -f '{{index .ContainerConfig.Labels "git-commit"}}' $IMAGENAME
-  - docker inspect -f '{{index .ContainerConfig.Labels "git-branch"}}' $IMAGENAME
-  - echo $BINTRAY_REPOSITORY:$TRAVIS_COMMIT;
+install:
+  - make get
 
-branches:
-  only:
-  - master
-  - /^v\d+$/
+script:
+  - make
+  - make test-all
+  - 'if [ "$TARGET_OS" = "linux" ]; then
+      make docker-build;
+    fi'
+  - make build-artifacts
+
+after_seccess:
+  - 'if [ "$TARGET_OS" = "linux" ]; then
+      make docker-inspect;
+    fi'
+
+deploy:
+  - provider: releases
+    api_key:
+      secure: e7OBw+5zpLhH/oxyl98Xka+rBssCmWn2zsBiJDXjLLVB9rVozFPKXfUcQZ9yq7gnbo27NB1hfijKvdAZmR4lTRAmfuW+G4Q/9T3XKQ4X16Zc4r8YyIrSzljU9jRu9fOWCJ9gR21j9CvNIJtvzdoVmHmfufEQFKuqoOz2qnq5OV4a88Z5ZgfsW390TNBPz1N37pvf8T/erP7E78gunjoNhKBbqU5HqQe693vh8lIwlI89xhyqvN/6M53oA03E0UhC/TnFbOhCGvz9QIMEc4RspZPqDRtCpECnxPOiu+y9tKcCttT6wjlr5p8b3JcA/j3XnkYVrFg671yxlpDypcYhX8eGx0j3J2fNGk9q1t0g2V4ZBxcWNtgZXp/RL5NfINFAdYEXOlwAKJ/fItbN/1+RT7arGAzCGnafU/bjm2d+OCrxeCyVfuEhLWfDc35GqRpc8d1JR4ywj7t7lFj1VmyMAV9WgjXlq1jXBR2/P+BZBZqHo25H1VJT6PFFNzfNVcGaGzPuDPMOkVOeZWVWy5s1l+EzMfdoMmeBAmsaOhclpuHGs7wxJ5e3fnKCMnAxoYeyJo1itujXj3jCVlHzInlba//Q3q6MkTDt4ZqRR6l5dRKhlDqAEWh5Dadl2almHqfw4X62SEhRAOVr37TDfN+fcmkydGTx+P0Sc2r65VjOWjI=
+    skip_cleanup: true
+    file_glob: true
+    file: artf/*
+    on:
+      tags: true
+# Update latest docker image
+  - provider: script
+    script: make docker-publish
+    on:
+      branch: master
+      condition: "$TARGET_OS = linux"
+# Publish tagged docker image
+  - provider: script
+    script: make docker-publish
+    on:
+      tags: true
+      condition: "$TARGET_OS = linux"
