@@ -25,8 +25,8 @@ Security, Inc. and is based on the OAuth2.0 proposal.
     * [Usage](#usage)
     * [Settings](#settings)
 * [Health checker](#health-checker)
-    * [GET /health/status](#get-healthstatus)
-    * [GET /health/info](#get-healthinfo)
+    * [GET /v4/health/status](#get-v4healthstatus)
+    * [GET /v4/health/info](#get-v4healthinfo)
 * [Appendix A. Response codes](#appendix-a-response-codes)
 * [Appendix B. Environment](#appendix-b-environment)
 * [Appendix C. Links](#appendix-c-links)
@@ -228,7 +228,7 @@ $ docker start virgil-auth
 
 To test:
 ```
-$ curl http://localhost/health/status -v
+$ curl http://localhost/v4/health/status -v
 ```
 
 ## Settings
@@ -242,12 +242,12 @@ Full list of parameters in [Appendix B. Environment](#appendix-b-environment).
 
 # Health checker
 
-## GET /health/status
+## GET /v4/health/status
 
 This endpoint is used to get status of Virgil Auth service.
 Return StatusOK (200) if the service work correctly otherwise return StatusBadRequest(400)
 
-## GET /health/info
+## GET /v4/health/info
 
 This endpoint is used to get info of dependencies of Virgil Auth service.
 
