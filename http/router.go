@@ -15,9 +15,9 @@ type Router struct {
 func (r *Router) Handler(ctx *fasthttp.RequestCtx) {
 	if ctx.IsGet() {
 		switch string(ctx.Path()) {
-		case "/health/status":
+		case "/v4/health/status":
 			r.HealthChecker.Status(ctx)
-		case "/health/info":
+		case "/v4/health/info":
 			r.HealthChecker.Info(ctx)
 		default:
 			ctx.Error("", fasthttp.StatusMethodNotAllowed)

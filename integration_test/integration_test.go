@@ -329,7 +329,7 @@ func TestGetCode_AttemptUseTwice_ReturnErr(t *testing.T) {
 }
 
 func TestHealthStatus(t *testing.T) {
-	resp, err := http.Get("http://localhost:8080/health/status")
+	resp, err := http.Get("http://localhost:8080/v4/health/status")
 
 	assert.Nil(t, err)
 	resp.Body.Close()
@@ -343,7 +343,7 @@ type healthInfo struct {
 }
 
 func TestHealthInfo(t *testing.T) {
-	resp, err := http.Get("http://localhost:8080/health/info")
+	resp, err := http.Get("http://localhost:8080/v4/health/info")
 
 	assert.Nil(t, err)
 	b, _ := ioutil.ReadAll(resp.Body)
