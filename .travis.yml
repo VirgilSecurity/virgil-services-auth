@@ -59,12 +59,13 @@ after_seccess:
 deploy:
   - provider: releases
     api_key:
-      secure: e7OBw+5zpLhH/oxyl98Xka+rBssCmWn2zsBiJDXjLLVB9rVozFPKXfUcQZ9yq7gnbo27NB1hfijKvdAZmR4lTRAmfuW+G4Q/9T3XKQ4X16Zc4r8YyIrSzljU9jRu9fOWCJ9gR21j9CvNIJtvzdoVmHmfufEQFKuqoOz2qnq5OV4a88Z5ZgfsW390TNBPz1N37pvf8T/erP7E78gunjoNhKBbqU5HqQe693vh8lIwlI89xhyqvN/6M53oA03E0UhC/TnFbOhCGvz9QIMEc4RspZPqDRtCpECnxPOiu+y9tKcCttT6wjlr5p8b3JcA/j3XnkYVrFg671yxlpDypcYhX8eGx0j3J2fNGk9q1t0g2V4ZBxcWNtgZXp/RL5NfINFAdYEXOlwAKJ/fItbN/1+RT7arGAzCGnafU/bjm2d+OCrxeCyVfuEhLWfDc35GqRpc8d1JR4ywj7t7lFj1VmyMAV9WgjXlq1jXBR2/P+BZBZqHo25H1VJT6PFFNzfNVcGaGzPuDPMOkVOeZWVWy5s1l+EzMfdoMmeBAmsaOhclpuHGs7wxJ5e3fnKCMnAxoYeyJo1itujXj3jCVlHzInlba//Q3q6MkTDt4ZqRR6l5dRKhlDqAEWh5Dadl2almHqfw4X62SEhRAOVr37TDfN+fcmkydGTx+P0Sc2r65VjOWjI=
+      secure: niW59QpncwYufI1zOMNNEWWC2XqNJJ3vpD/3Ye2Z3Rb7vpYTz4t0qDpa900tdhTnFMUNxpwvs4JMBwGxJ5qhq+e5ceC+3ZWNexshs6SNHB+tmMIWkGt3QSPBjqQKMTcsLr7TAPGdVehAJ36g4WNBAsExlXWz0AcgPnpAulTXQ/vn6D3/PziAPkgFoI2wa5Kyhv1tdmGcGKHLZRKs58YMp0XftsZBo4HAkvuJJknFJtRkbLcACSJHqa2Jq+wqZZhon+wxfJJUYiDMsJ806plNUhe/VhLH3/tvuzQvijRl2Hjl7+W7EM3sTuheTVycWQTEmAD2TapMh18DBG6JxIiIsxT5Ndsg/ksVpPvYRF0n1uhszY7ZQqTKoMIpwQm7a3omTXEqBFtEAdtwhmGWyCi4uZBTeC+MJLYh5alHWlOSpO23q2mrDWVixWN//VYZUVZoi99wblNkOOexHCsj3mSxfJ2qJP+3tcmEd5TR6iI7glqeV4mvljTq+yVtD3s0gbT/uz9BV+mcR+xDGffjplAR6mZPhujniB7OvyVLP2a5rUFV4X8e0gDrPOI18hHl7F9aRQnIjDcn1edllPifP31HXQ2tDiXDCmNPRW0QfPLLCPmu1aJHJkRTvjFQ+V+R41KpUufouHrIbsmYsuS4XpG4e0rha+SebfB2/sBTAbRYPVs=
     skip_cleanup: true
     file_glob: true
     file: artf/*
     on:
       tags: true
+      repo: VirgilSecurity/virgil-services-auth
 # Update latest docker image
   - provider: script
     script: make docker-publish
