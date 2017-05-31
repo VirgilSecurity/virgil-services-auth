@@ -298,7 +298,7 @@ Additional information about the error is returned as JSON-object like:
 53020 - Encrypted message validation failed
 53030 - The authentication attempt instance has expired already
 53040 - Grant type is not supported
-53050 - Unable to find an authorization attempt by the specified code
+53050 - Unable to find an authorization attempt by the specified authorization grant id
 53060 - An authorization grant code has expired already
 53070 - An authorization grant code was used previously
 53080 - The Access token is invalid
