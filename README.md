@@ -16,8 +16,8 @@ Security, Inc. and is based on the OAuth2.0 proposal.
 * [Endpoints](#endpoints)
     * [POST /v4/authorization-grant/actions/get-challenge-message](#post-v4authorization-grantactionsget-challenge-message)
     * [POST /v4/authorization-grant/{authorization_grant_id}/actions/acknowledge](#post-v4authorization-grantauthorization_grant_idactionsacknowledge)
-    * [POST /v4/authorization/actions/obtain-access-code](#post-v4authorizationactionsobtain-access-token)
-    * [POST /v4/authorization/actions/refresh-access-code](#post-v4authorizationactionsrefresh-access-token)
+    * [POST /v4/authorization/actions/obtain-access-token](#post-v4authorizationactionsobtain-access-token)
+    * [POST /v4/authorization/actions/refresh-access-token](#post-v4authorizationactionsrefresh-access-token)
     * [POST /v4/authorization/actions/verify](#post-v4authorizationactionsverify)
 * [Get in start](#get-in-start)
     * [Prepare](#prepare)
@@ -109,7 +109,7 @@ Encrypted message is some random string that was encrypted for the `resource_own
 
 ### POST /v4/authorization-grant/{authorization_grant_id}/actions/acknowledge
 
-Acknowledges that `Resource Owner` holds valid Private Key and receives an `Authorization Grant` token in response.
+Acknowledges that `Resource Owner` holds valid Private Key and receives an `Authorization Grant` code in response.
 **encrypted_message** is a decrypted message from the previous step and re-encrypted with a Virgil Auth public key.
 
 Request:
@@ -138,7 +138,7 @@ com.VirgilSecurity.keys_virgil_card[65bce698-b7be-46d3-941b-66936b235314,05e22b5
 
 ### POST /v4/authorization/actions/obtain-access-token
 
-The endpoint purpose is to exchange an `Authorization Grant` token from the previous step on a valid `Access Token`.
+The endpoint purpose is to exchange an `Authorization Grant` code from the previous step on a valid `Access Token`.
 
 Request:
 ```json
@@ -297,11 +297,11 @@ Additional information about the error is returned as JSON-object like:
 53011 - The Auth service cannot get access to the Virgil card specified by id. The card in application scope and can't be retrieved
 53020 - Encrypted message validation failed
 53030 - The authentication attempt instance has expired already
-53040 - Grant type is not supported as it is outside of the list: ['authorization_code']
+53040 - Grant type is not supported
 53050 - Unable to find an authorization attempt by the specified code
-53060 - An authorization code has expired already
-53070 - An authorization code was used previously
-53080 - The Access code is invalid
+53060 - An authorization grant code has expired already
+53070 - An authorization grant code was used previously
+53080 - The Access token is invalid
 53090 - The Refresh token not found
 53100 - The Resource owner's Virgil card not verified
 ```
