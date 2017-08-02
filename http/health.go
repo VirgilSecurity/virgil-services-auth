@@ -35,6 +35,7 @@ func (h *HealthChecker) Status(ctx *fasthttp.RequestCtx) {
 func (h *HealthChecker) Info(ctx *fasthttp.RequestCtx) {
 	resp := make(map[string]interface{})
 	r := h.Check()
+	ctx.SetContentType("application/json")
 	ctx.SetStatusCode(fasthttp.StatusOK)
 	for _, v := range r {
 		if v.Status != fasthttp.StatusOK {
