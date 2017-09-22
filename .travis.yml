@@ -18,7 +18,6 @@ matrix:
       language: go
       go: 1.7.5
       env:
-        global:
           - TARGET_OS=darwin
           - DB=127.0.0.1:27017
 
