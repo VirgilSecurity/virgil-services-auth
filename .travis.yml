@@ -10,7 +10,6 @@ matrix:
             - docker
             - mongodb
       env:
-        global:
           - GIT_BRANCH=$TRAVIS_BRANCH
           - TARGET_OS=linux
           - DB=127.0.0.1:27017
