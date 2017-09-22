@@ -95,7 +95,7 @@ docker-dockerhub-publish:
 
 docker-bintray-publish:
 		$(call tag_docker, $(BINTRAY_REPOSITORY))
-		docker push $(DOCKERHUB_REPOSITORY)
+		docker push $(BINTRAY_REPOSITORY)
 
 docker-inspect:
 	docker inspect -f '{{index .ContainerConfig.Labels "version"}}' $(IMAGENAME)
