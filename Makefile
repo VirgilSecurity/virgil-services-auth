@@ -61,7 +61,7 @@ clean:
 $(GOPATH)/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/virgil_crypto_go.go:
 ifeq ($(C_CRYPTO),true)
 	go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v4
-	cd $$GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4 ;	 make
+	cd $$GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4 ;	 make BRANCH=v2.2.5
 endif
 
 get: $(GOPATH)/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/virgil_crypto_go.go
