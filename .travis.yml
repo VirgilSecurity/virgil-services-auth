@@ -10,7 +10,6 @@ matrix:
             - docker
             - mongodb
       env:
-        global:
           - GIT_BRANCH=$TRAVIS_BRANCH
           - TARGET_OS=linux
           - DB=127.0.0.1:27017
@@ -19,7 +18,6 @@ matrix:
       language: go
       go: 1.7.5
       env:
-        global:
           - TARGET_OS=darwin
           - DB=127.0.0.1:27017
 
@@ -35,9 +33,9 @@ before_install:
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
       docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD";
       go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v4;
-      wget https://cdn.virgilsecurity.com/crypto-go/virgil-crypto-2.0.4-go-linux-x86_64.tgz;
-      tar -xvf virgil-crypto-2.0.4-go-linux-x86_64.tgz --strip-components=1 -C $GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/;
-      rm virgil-crypto-2.0.4-go-linux-x86_64.tgz;
+      wget https://cdn.virgilsecurity.com/crypto-go/virgil-crypto-2.2.5-go-linux-x86_64.tgz ;
+      tar -xvf virgil-crypto-2.2.5-go-linux-x86_64.tgz  --strip-components=1 -C $GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/;
+      rm virgil-crypto-2.2.5-go-linux-x86_64.tgz;
     fi'
 
 install:
