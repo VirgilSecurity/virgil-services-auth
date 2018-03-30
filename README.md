@@ -234,8 +234,8 @@ $ curl http://localhost/v4/health/status -v
 ## Settings
 
 Most of settings are obvious and easy to understand, but some parameters needed more detailed description:
-- *Token:* The access token provides an authenticated secure access to the Virgil services. [How to create access token](https://virgilsecurity.com/docs/faq/add-access-token)
-- *Cards address:* It's address of Virgil [cards service](https://virgilsecurity.com/docs/services/cards/v4/cards-service). It provides interface to search user's card.
+- *Token:* The access token provides an authenticated secure access to the Virgil services. [How to create access token](https://developer.virgilsecurity.com/docs/api-reference/card-service/v4#authorization)
+- *Cards address:* It's address of Virgil [cards service](https://developer-dev.virgilsecurity.com/docs/api-reference/card-service/v4). It provides interface to search user's card.
 - *Authority card:* It's a card whose signature we trust. If this parameter is set up then a client's card **must** have signature of the authority. The parameter contains of two values: card ID card and public key
 
 Full list of parameters in [Appendix B. Environment](#appendix-b-environment).
