@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/VirgilSecurity/virgil-services-auth/db"
-	jwt "github.com/dgrijalva/jwt-go"
+	jwt "gopkg.in/dgrijalva/jwt-go.v3"
 	"gopkg.in/virgil.v5/cryptoapi"
 )
 
