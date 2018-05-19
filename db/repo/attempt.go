@@ -11,7 +11,7 @@ import (
 )
 
 const AttemptExpiresIn time.Duration = 2 * time.Minute
-const codeLengh = 38
+const codeLength = 38
 
 type Attempt struct {
 	C *mgo.Collection

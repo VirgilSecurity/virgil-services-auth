@@ -3,15 +3,29 @@ package services
 import (
 	"bytes"
 
-	"gopkg.in/virgil.v4/virgilcrypto"
+	"gopkg.in/virgil.v5/cryptoapi"
 )
 
+type CryptoProvider interface {
+	Encrypt(data []byte, key ...interface {
+		IsPublic() bool
+		Identifier() []byte
+	}) ([]byte, error)
+	Decrypt(cipherData []byte, key interface {
+		IsPrivate() bool
+		Identifier() []byte
+	}) ([]byte, error)
+	Sign(data []byte, key interface {
+		IsPrivate() bool
+		Identifier() []byte
+	}) ([]byte, error)
+}
 type Crypto struct {
-	PrivateKey virgilcrypto.PrivateKey
-	Crypto     virgilcrypto.Crypto
+	PrivateKey cryptoapi.PrivateKey
+	Crypto     CryptoProvider
 }
 
-func (c *Crypto) Encrypt(data []byte, recipient virgilcrypto.PublicKey) ([]byte, error) {
+func (c *Crypto) Encrypt(data []byte, recipient cryptoapi.PublicKey) ([]byte, error) {
 	return c.Crypto.Encrypt(data, recipient)
 }
 func (c *Crypto) Validate(CipherData, plainData []byte) bool {

@@ -15,15 +15,16 @@ import (
 	"testing"
 	"time"
 
-	"gopkg.in/virgil.v4/virgilcrypto"
+	"github.com/stretchr/testify/require"
+
+	"github.com/namsral/flag"
+	"github.com/stretchr/testify/assert"
+	jwt "gopkg.in/dgrijalva/jwt-go.v3"
+	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-services-auth/core"
 	"github.com/VirgilSecurity/virgil-services-auth/db"
 	"github.com/VirgilSecurity/virgil-services-auth/db/repo"
-	"github.com/stretchr/testify/assert"
-	jwt "gopkg.in/dgrijalva/jwt-go.v3"
-
-	"github.com/namsral/flag"
 )
 
 var (
@@ -37,7 +38,10 @@ func init() {
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	config.Crypto = virgilcrypto.DefaultCrypto
+	config.Crypto = cryptoimpl.NewVirgilCrypto()
+	config.CardCrypto = cryptoimpl.NewVirgilCardCrypto()
+	config.AccessTokenSigner = cryptoimpl.NewVirgilAccessTokenSigner()
+
 	setupDB(dbConnection)
 	setupAuthority()
 	setupClient()
@@ -49,7 +53,8 @@ func TestMain(m *testing.M) {
 		fmt.Println("Cannot generate Keypair:", err)
 		os.Exit(1)
 	}
-	config.authServiceKeyPair = authKeyPair
+	config.authServicePK = authKeyPair.PublicKey()
+	config.authServiceSK = authKeyPair.PrivateKey()
 
 	setupAuthService()
 	code := m.Run()
@@ -59,38 +64,38 @@ func TestMain(m *testing.M) {
 
 func TestCorrectScenario(t *testing.T) {
 	c := MakeClient()
-	msg, err := c.GetMessage(config.client.Card.ID)
-	assert.Nil(t, err)
+	msg, err := c.GetMessage(config.client.ID)
+	require.Nil(t, err)
 
-	rMsg, err := config.Crypto.Decrypt(msg.Message, config.client.KeyPair.PrivateKey())
-	assert.Nil(t, err)
-	eMsg, err := config.Crypto.Encrypt(rMsg, config.authServiceKeyPair.PublicKey())
-	assert.Nil(t, err)
+	rMsg, err := config.Crypto.Decrypt(msg.Message, config.client.SK)
+	require.Nil(t, err)
+	eMsg, err := config.Crypto.Encrypt(rMsg, config.authServicePK)
+	require.Nil(t, err)
 	code, err := c.GetCode(core.EncryptedMessage{
 		Message:   eMsg,
 		AttemptId: msg.AttemptId,
 	})
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	token1, err := c.GetToken(code)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	actual1, err := c.Verify(token1.Token)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	token2, err := c.Refresh(token1.Refresh)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	actual2, err := c.Verify(token2.Token)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
-	assert.Equal(t, config.client.Card.ID, actual1)
-	assert.Equal(t, config.client.Card.ID, actual2)
+	require.Equal(t, config.client.ID, actual1)
+	require.Equal(t, config.client.ID, actual2)
 }
 
 func TestGetCode_SendBrokenMessage_Err(t *testing.T) {
 	c := MakeClient()
-	msg, err := c.GetMessage(config.client.Card.ID)
+	msg, err := c.GetMessage(config.client.ID)
 	assert.Nil(t, err)
 
 	_, err = c.GetCode(core.EncryptedMessage{
@@ -102,10 +107,10 @@ func TestGetCode_SendBrokenMessage_Err(t *testing.T) {
 
 func TestGetCode_SendBrokenEncryptedMessage_Err(t *testing.T) {
 	c := MakeClient()
-	msg, err := c.GetMessage(config.client.Card.ID)
+	msg, err := c.GetMessage(config.client.ID)
 	assert.Nil(t, err)
 
-	eMsg, err := config.Crypto.Encrypt([]byte(`Broken message`), config.authServiceKeyPair.PublicKey())
+	eMsg, err := config.Crypto.Encrypt([]byte(`Broken message`), config.authServicePK)
 	assert.Nil(t, err)
 
 	_, err = c.GetCode(core.EncryptedMessage{
@@ -126,7 +131,9 @@ func TestGetCode_AttemptIdIncorrect_Err(t *testing.T) {
 
 func TestGetMessage_CardIdIvalid_Err(t *testing.T) {
 	c := MakeClient()
-	_, err := c.GetMessage("broken card")
+	// len must 64 and it should be hex
+	b := make([]byte, 32)
+	_, err := c.GetMessage(hex.EncodeToString(b))
 	assert.Equal(t, &errorResponse{Code: core.StatusErrorCardNotFound, StatusCode: http.StatusBadRequest}, err)
 }
 
@@ -154,14 +161,14 @@ func TestRefresh_IncorrectRefreshToken_Err(t *testing.T) {
 	assert.Equal(t, &errorResponse{Code: core.StatusErrorRefreshTokenNotFound, StatusCode: http.StatusBadRequest}, err)
 }
 
-func TestVerfiy_TokenExpired_ReturnErr(t *testing.T) {
+func TestVerify_TokenExpired_ReturnErr(t *testing.T) {
 	iat := time.Now().Add(-24 * time.Hour).UTC().Truncate(time.Second)
 	token := jwt.NewWithClaims(repo.SigningMethodVirgilCrypt, jwt.StandardClaims{
 		ExpiresAt: iat.Add(10 * time.Minute).Unix(),
 		IssuedAt:  iat.Unix(),
 		Issuer:    "Virgil Security, Inc",
 	})
-	tstr, err := token.SignedString(config.authServiceKeyPair.PrivateKey())
+	tstr, err := token.SignedString(repo.KeyCryptoPair{Crypto: config.Crypto, Key: config.authServiceSK})
 	assert.Nil(t, err)
 	c := MakeClient()
 
@@ -173,12 +180,12 @@ func TestVerfiy_TokenExpired_ReturnErr(t *testing.T) {
 func Test_GetTokenByOneCode_ReturnErr(t *testing.T) {
 
 	c := MakeClient()
-	msg, err := c.GetMessage(config.client.Card.ID)
+	msg, err := c.GetMessage(config.client.ID)
 	assert.Nil(t, err)
 
-	rMsg, err := config.Crypto.Decrypt(msg.Message, config.client.KeyPair.PrivateKey())
+	rMsg, err := config.Crypto.Decrypt(msg.Message, config.client.SK)
 	assert.Nil(t, err)
-	eMsg, err := config.Crypto.Encrypt(rMsg, config.authServiceKeyPair.PublicKey())
+	eMsg, err := config.Crypto.Encrypt(rMsg, config.authServicePK)
 	assert.Nil(t, err)
 	code, err := c.GetCode(core.EncryptedMessage{
 		Message:   eMsg,
@@ -194,7 +201,7 @@ func Test_GetTokenByOneCode_ReturnErr(t *testing.T) {
 }
 
 func TestGetMessage_ReqBodyNil_ReturnErr(t *testing.T) {
-	resp, err := http.Post("http://localhost:8080/v4/authorization-grant/actions/get-challenge-message", "application/json", nil)
+	resp, err := http.Post("http://localhost:8080/v5/authorization-grant/actions/get-challenge-message", "application/json", nil)
 	assert.Nil(t, err)
 	defer resp.Body.Close()
 
@@ -209,7 +216,7 @@ func TestGetMessage_ReqBodyNil_ReturnErr(t *testing.T) {
 }
 
 func TestGetMessage_ReqBodyIncorrect_ReturnErr(t *testing.T) {
-	resp, err := http.Post("http://localhost:8080/v4/authorization-grant/actions/get-challenge-message", "application/json", ioutil.NopCloser(strings.NewReader("{}")))
+	resp, err := http.Post("http://localhost:8080/v5/authorization-grant/actions/get-challenge-message", "application/json", ioutil.NopCloser(strings.NewReader("{}")))
 	assert.Nil(t, err)
 	defer resp.Body.Close()
 
@@ -228,7 +235,7 @@ func TestGetToken_UnsupportedGrantType_ReturnErr(t *testing.T) {
 		GrantType: "broken",
 		Code:      "",
 	})
-	resp, err := http.Post("http://localhost:8080/v4/authorization/actions/obtain-access-token", "application/json", ioutil.NopCloser(bytes.NewReader(b)))
+	resp, err := http.Post("http://localhost:8080/v5/authorization/actions/obtain-access-token", "application/json", ioutil.NopCloser(bytes.NewReader(b)))
 	assert.Nil(t, err)
 	defer resp.Body.Close()
 
@@ -246,7 +253,7 @@ func TestRefresh_UnsupportedGrantType_ReturnErr(t *testing.T) {
 	b, _ := json.Marshal(core.Token{
 		Type: "broken",
 	})
-	resp, err := http.Post("http://localhost:8080/v4/authorization/actions/refresh-access-token", "application/json", ioutil.NopCloser(bytes.NewReader(b)))
+	resp, err := http.Post("http://localhost:8080/v5/authorization/actions/refresh-access-token", "application/json", ioutil.NopCloser(bytes.NewReader(b)))
 	assert.Nil(t, err)
 	defer resp.Body.Close()
 
@@ -286,7 +293,7 @@ func TestGetCode_AttemptExpired_ReturnErr(t *testing.T) {
 	code := hex.EncodeToString(cb)
 
 	c := MakeClient()
-	attempts := config.session.DB("").C("attampt")
+	attempts := config.session.DB("").C("attempt")
 	attempts.Insert(db.Attempt{
 		OwnerID: "123",
 		Message: "secret message",
@@ -294,7 +301,7 @@ func TestGetCode_AttemptExpired_ReturnErr(t *testing.T) {
 		Expired: time.Now().UTC().Add(-repo.AttemptExpiresIn),
 	})
 
-	eMsg, err := config.Crypto.Encrypt([]byte("secret message"), config.authServiceKeyPair.PublicKey())
+	eMsg, err := config.Crypto.Encrypt([]byte("secret message"), config.authServicePK)
 	assert.Nil(t, err)
 
 	_, err = c.GetCode(core.EncryptedMessage{
@@ -307,12 +314,12 @@ func TestGetCode_AttemptExpired_ReturnErr(t *testing.T) {
 
 func TestGetCode_AttemptUseTwice_ReturnErr(t *testing.T) {
 	c := MakeClient()
-	msg, err := c.GetMessage(config.client.Card.ID)
+	msg, err := c.GetMessage(config.client.ID)
 	assert.Nil(t, err)
 
-	rMsg, err := config.Crypto.Decrypt(msg.Message, config.client.KeyPair.PrivateKey())
+	rMsg, err := config.Crypto.Decrypt(msg.Message, config.client.SK)
 	assert.Nil(t, err)
-	eMsg, err := config.Crypto.Encrypt(rMsg, config.authServiceKeyPair.PublicKey())
+	eMsg, err := config.Crypto.Encrypt(rMsg, config.authServicePK)
 	assert.Nil(t, err)
 
 	_, err = c.GetCode(core.EncryptedMessage{
@@ -329,7 +336,7 @@ func TestGetCode_AttemptUseTwice_ReturnErr(t *testing.T) {
 }
 
 func TestHealthStatus(t *testing.T) {
-	resp, err := http.Get("http://localhost:8080/v4/health/status")
+	resp, err := http.Get("http://localhost:8080/v5/health/status")
 
 	assert.Nil(t, err)
 	resp.Body.Close()
@@ -343,7 +350,7 @@ type healthInfo struct {
 }
 
 func TestHealthInfo(t *testing.T) {
-	resp, err := http.Get("http://localhost:8080/v4/health/info")
+	resp, err := http.Get("http://localhost:8080/v5/health/info")
 
 	assert.Nil(t, err)
 	b, _ := ioutil.ReadAll(resp.Body)
@@ -352,13 +359,10 @@ func TestHealthInfo(t *testing.T) {
 	json.Unmarshal(b, &health)
 	mongo := health["mongo"]
 	assert.Equal(t, http.StatusOK, mongo.Status)
-	cards := health["cards-service"]
-	assert.Equal(t, http.StatusOK, cards.Status)
-
 }
 
 func TestGetMessage_CardNotGlobal_ReturnErr(t *testing.T) {
 	c := MakeClient()
-	_, err := c.GetMessage(config.untrustedClient.Card.ID)
+	_, err := c.GetMessage(config.untrustedClient.ID)
 	assert.Equal(t, &errorResponse{StatusCode: http.StatusBadRequest, Code: core.StatusErrorCardInvalid}, err)
 }

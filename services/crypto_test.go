@@ -3,17 +3,20 @@ package services
 import (
 	"testing"
 
+	"gopkg.in/virgil.v5/cryptoimpl"
+
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/virgil.v4/virgilcrypto"
 )
 
+var crypto = cryptoimpl.NewVirgilCrypto()
+
 func TestReversibility(t *testing.T) {
-	pk, _ := virgilcrypto.DefaultCrypto.ImportPrivateKey([]byte(`MC4CAQAwBQYDK2VwBCIEIAMIR/IZeffxbUT+BmbQSWv+E0QELSC9zhwq4jPp0zEp`), "")
-	pbk, _ := virgilcrypto.DefaultCrypto.ImportPublicKey([]byte(`MCowBQYDK2VwAyEA9C2xSdT5c+0Y1K87vH0c17gOrAZhXNGxW6sgjotoDOs=`))
+	pk, _ := crypto.ImportPrivateKey([]byte(`MC4CAQAwBQYDK2VwBCIEIAMIR/IZeffxbUT+BmbQSWv+E0QELSC9zhwq4jPp0zEp`), "")
+	pbk, _ := crypto.ImportPublicKey([]byte(`MCowBQYDK2VwAyEA9C2xSdT5c+0Y1K87vH0c17gOrAZhXNGxW6sgjotoDOs=`))
 
 	c := Crypto{
 		PrivateKey: pk,
-		Crypto:     virgilcrypto.DefaultCrypto,
+		Crypto:     crypto,
 	}
 	msg := []byte(`message`)
 	emsg, _ := c.Encrypt(msg, pbk)
@@ -23,12 +26,12 @@ func TestReversibility(t *testing.T) {
 }
 
 func TestValidate_MsgNotEquals_ReturnFalse(t *testing.T) {
-	pk, _ := virgilcrypto.DefaultCrypto.ImportPrivateKey([]byte(`MC4CAQAwBQYDK2VwBCIEIAMIR/IZeffxbUT+BmbQSWv+E0QELSC9zhwq4jPp0zEp`), "")
-	pbk, _ := virgilcrypto.DefaultCrypto.ImportPublicKey([]byte(`MCowBQYDK2VwAyEA9C2xSdT5c+0Y1K87vH0c17gOrAZhXNGxW6sgjotoDOs=`))
+	pk, _ := crypto.ImportPrivateKey([]byte(`MC4CAQAwBQYDK2VwBCIEIAMIR/IZeffxbUT+BmbQSWv+E0QELSC9zhwq4jPp0zEp`), "")
+	pbk, _ := crypto.ImportPublicKey([]byte(`MCowBQYDK2VwAyEA9C2xSdT5c+0Y1K87vH0c17gOrAZhXNGxW6sgjotoDOs=`))
 
 	c := Crypto{
 		PrivateKey: pk,
-		Crypto:     virgilcrypto.DefaultCrypto,
+		Crypto:     crypto,
 	}
 	msg := []byte(`message`)
 	emsg, _ := c.Encrypt([]byte("broken message"), pbk)

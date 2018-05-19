@@ -27,7 +27,7 @@ func (s *Auth) AccessToken(resp core.Response, code core.AccessCode) {
 	m, err := s.CodeRepo.GetCode(code.Code)
 	if err != nil {
 		s.Logger.Printf("AccessToken[GetCode]: %v", err)
-		resp.Error(core.StatusErrorInernalApplicationError)
+		resp.Error(core.StatusErrorInternalApplicationError)
 		return
 	}
 	if m == nil {
@@ -45,13 +45,13 @@ func (s *Auth) AccessToken(resp core.Response, code core.AccessCode) {
 	token, err := s.TokenRepo.Make(m.OwnerID, m.Scope)
 	if err != nil {
 		s.Logger.Printf("AccessToken[Make token]: %v", err)
-		resp.Error(core.StatusErrorInernalApplicationError)
+		resp.Error(core.StatusErrorInternalApplicationError)
 		return
 	}
 	refresh, err := s.RefreshRepo.Make(m.OwnerID, m.Scope)
 	if err != nil {
 		s.Logger.Printf("AccessToken[Make refresh token]: %v", err)
-		resp.Error(core.StatusErrorInernalApplicationError)
+		resp.Error(core.StatusErrorInternalApplicationError)
 		return
 	}
 	resp.Success(&core.Token{
@@ -69,7 +69,7 @@ func (s *Auth) Refresh(resp core.Response, grantType string, token string) {
 	refreshToken, err := s.RefreshRepo.Get(token)
 	if err != nil {
 		s.Logger.Printf("Refresh[Get refresh token]: %v", err)
-		resp.Error(core.StatusErrorInernalApplicationError)
+		resp.Error(core.StatusErrorInternalApplicationError)
 		return
 	}
 	if refreshToken == nil {
@@ -79,7 +79,7 @@ func (s *Auth) Refresh(resp core.Response, grantType string, token string) {
 	accessToken, err := s.TokenRepo.Make(refreshToken.OwnerID, refreshToken.Scope)
 	if err != nil {
 		s.Logger.Printf("Refresh[Get access token]: %v", err)
-		resp.Error(core.StatusErrorInernalApplicationError)
+		resp.Error(core.StatusErrorInternalApplicationError)
 		return
 	}
 	resp.Success(&core.RefreshAccessToken{
