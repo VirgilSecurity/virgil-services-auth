@@ -3,7 +3,7 @@ matrix:
 # DOCKER && LINUX
     - os: linux
       language: go
-      go: 1.7.x
+      go: 1.10.x
       dist: trusty
       sudo: required
       services:
@@ -17,7 +17,7 @@ matrix:
 # MACOS
     - os: osx
       language: go
-      go: 1.7.5
+      go: 1.10.x
       env:
           - TARGET_OS=darwin
           - DB=127.0.0.1:27017
