@@ -32,10 +32,10 @@ before_install:
       echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc;
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
       docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD";
-      go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v4;
-      wget https://cdn.virgilsecurity.com/crypto-go/virgil-crypto-2.2.5-go-linux-x86_64.tgz ;
-      tar -xvf virgil-crypto-2.2.5-go-linux-x86_64.tgz  --strip-components=1 -C $GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/;
-      rm virgil-crypto-2.2.5-go-linux-x86_64.tgz;
+      go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v5;
+      wget https://cdn.virgilsecurity.com/crypto-go/virgil-crypto-2.4.4-go-linux-x86_64.tgz ;
+      tar -xvf virgil-crypto-2.4.4-go-linux-x86_64.tgz  --strip-components=1 -C $GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v5/;
+      rm virgil-crypto-2.4.4-go-linux-x86_64.tgz;
     fi'
 
 install:
