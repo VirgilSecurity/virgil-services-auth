@@ -13,7 +13,7 @@ matrix:
           - GIT_BRANCH=$TRAVIS_BRANCH
           - TARGET_OS=linux
           - DB=127.0.0.1:27017
-          - CRYPTO_CND_URL=virgil-crypto-2.4.0-go-linux-x86_64.tgz
+          - CRYPTO_CND_URL=virgil-crypto-2.4.4-go-linux-x86_64.tgz 
 # MACOS
     - os: osx
       language: go
@@ -21,7 +21,7 @@ matrix:
       env:
           - TARGET_OS=darwin
           - DB=127.0.0.1:27017
-          - CRYPTO_CND_URL=virgil-crypto-2.4.0-go-darwin-17.5-x86_64.tgz
+          - CRYPTO_CND_URL=virgil-crypto-2.4.4-go-darwin-17.5-x86_64.tgz
 
 before_install:  
   - 'if [ "$TARGET_OS" = "linux" ]; then
@@ -30,7 +30,7 @@ before_install:
       docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD";
     fi'
   - go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v5;
-  - wget https://cdn.virgilsecurity.com/crypto-go/$CRYPTO_CND_URL ;
+  - wget https://cdn.virgilsecurity.com/virgil-crypto/go/$CRYPTO_CND_URL ;
   - tar -xvf $CRYPTO_CND_URL  --strip-components=1 -C $GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v5/;
   - rm $CRYPTO_CND_URL;
 
