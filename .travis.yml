@@ -19,7 +19,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-4.9
+            - g++-6
 # MACOS
     - os: osx
       language: go
@@ -42,6 +42,8 @@ before_install:
       echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc;
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" virgilsecurity-docker-core.bintray.io;
       docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD";
+      gcc --version;
+      g++ --version;
     fi'
   - go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v5;
   - wget https://cdn.virgilsecurity.com/virgil-crypto/go/$CRYPTO_CND_URL ;
