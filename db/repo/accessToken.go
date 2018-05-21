@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/VirgilSecurity/virgil-services-auth/db"
-	"gopkg.in/dgrijalva/jwt-go.v3"
-	"gopkg.in/virgil.v4/virgilcrypto"
+	jwt "gopkg.in/dgrijalva/jwt-go.v3"
+	"gopkg.in/virgil.v5/cryptoapi"
 )
 
 const accessTokenExpiresIn time.Duration = 10 * time.Minute
@@ -27,9 +27,17 @@ func (c *myClaims) Valid() error {
 	return nil
 }
 
+// Implement SigningMethod to add new methods for signing or verifying tokens.
+type SigningMethod interface {
+	Verify(signingString, signature string, key interface{}) error // Returns nil if signature is valid
+	Sign(signingString string, key interface{}) (string, error)    // Returns encoded signature or error
+	Alg() string                                                   // returns the alg identifier for this method (example: 'HS256')
+}
+
 type AccessToken struct {
-	PrivateKey virgilcrypto.PrivateKey
-	PublicKey  virgilcrypto.PublicKey
+	PrivateKey interface{}
+	PublicKey  interface{}
+	Crypto     Crypto
 }
 
 func (r *AccessToken) Make(ownerId string, scope string) (*db.AccessToken, error) {
@@ -41,7 +49,7 @@ func (r *AccessToken) Make(ownerId string, scope string) (*db.AccessToken, error
 		IssuedAt:  iat.Unix(),
 		Issuer:    "Virgil Security, Inc",
 	})
-	tstr, err := t.SignedString(r.PrivateKey)
+	tstr, err := t.SignedString(KeyCryptoPair{Crypto: r.Crypto, Key: r.PrivateKey})
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +70,7 @@ func (r *AccessToken) Get(token string) (*db.AccessToken, error) {
 			return nil, jwt.NewValidationError(fmt.Sprintf("signing method %v is invalid", t.Method.Alg()), jwt.ValidationErrorSignatureInvalid)
 		}
 
-		return r.PublicKey, nil
+		return KeyCryptoPair{Crypto: r.Crypto, Key: r.PublicKey}, nil
 	})
 
 	if err != nil {
@@ -79,10 +87,26 @@ func (r *AccessToken) Get(token string) (*db.AccessToken, error) {
 	}, nil
 }
 
-type SigningMethodVirgil struct {
+type Crypto interface {
+	VerifySignature(data []byte, signature []byte, key interface {
+		IsPublic() bool
+		Identifier() []byte
+	}) (err error)
+
+	Sign(data []byte, signer interface {
+		IsPrivate() bool
+		Identifier() []byte
+	}) (_ []byte, err error)
 }
 
-var SigningMethodVirgilCrypt *SigningMethodVirgil = &SigningMethodVirgil{}
+type KeyCryptoPair struct {
+	Crypto Crypto
+	Key    interface{}
+}
+
+type SigningMethodVirgil struct{}
+
+var SigningMethodVirgilCrypt = new(SigningMethodVirgil)
 
 func init() {
 	jwt.RegisterSigningMethod(SigningMethodVirgilCrypt.Alg(), func() jwt.SigningMethod {
@@ -91,11 +115,14 @@ func init() {
 }
 
 func (s *SigningMethodVirgil) Verify(signingString, signature string, key interface{}) error { // Returns nil if signature is valid
-	k, ok := key.(virgilcrypto.PublicKey)
+	keycrypt, ok := key.(KeyCryptoPair)
 	if !ok {
 		return jwt.ErrInvalidKeyType
 	}
-
+	k, ok := keycrypt.Key.(cryptoapi.PublicKey)
+	if !ok {
+		return jwt.ErrInvalidKeyType
+	}
 	// Decode signature, for comparison
 	sig, err := jwt.DecodeSegment(signature)
 	if err != nil {
@@ -104,13 +131,9 @@ func (s *SigningMethodVirgil) Verify(signingString, signature string, key interf
 	// This signing method is symmetric, so we validate the signature
 	// by reproducing the signature from the signing string and key, then
 	// comparing that against the provided signature.
-	ok, err = virgilcrypto.DefaultCrypto.Verify([]byte(signingString), sig, k)
+	err = keycrypt.Crypto.VerifySignature([]byte(signingString), sig, k)
 	if err != nil {
 		return err
-	}
-
-	if !ok {
-		return jwt.ErrSignatureInvalid
 	}
 
 	// No validation errors.  Signature is good.
@@ -118,11 +141,15 @@ func (s *SigningMethodVirgil) Verify(signingString, signature string, key interf
 
 }
 func (s *SigningMethodVirgil) Sign(signingString string, key interface{}) (string, error) { // Returns encoded signature or error
-	k, ok := key.(virgilcrypto.PrivateKey)
+	keycrypt, ok := key.(KeyCryptoPair)
 	if !ok {
 		return "", jwt.ErrInvalidKeyType
 	}
-	sig, err := virgilcrypto.DefaultCrypto.Sign([]byte(signingString), k)
+	k, ok := keycrypt.Key.(cryptoapi.PrivateKey)
+	if !ok {
+		return "", jwt.ErrInvalidKeyType
+	}
+	sig, err := keycrypt.Crypto.Sign([]byte(signingString), k)
 	if err != nil {
 		return "", err
 	}

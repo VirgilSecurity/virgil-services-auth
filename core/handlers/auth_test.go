@@ -38,8 +38,8 @@ type FakeTokenRepo struct {
 	mock.Mock
 }
 
-func (s *FakeTokenRepo) Make(ownerId string, scope string) (t *db.AccessToken, err error) {
-	args := s.Called(ownerId)
+func (s *FakeTokenRepo) Make(ownerID string, scope string) (t *db.AccessToken, err error) {
+	args := s.Called(ownerID)
 	t, _ = args.Get(0).(*db.AccessToken)
 	err = args.Error(1)
 	return
@@ -56,8 +56,8 @@ type FakeRefreshRepo struct {
 	mock.Mock
 }
 
-func (r *FakeRefreshRepo) Make(ownerId string, scope string) (t *db.RefreshToken, err error) {
-	args := r.Called(ownerId)
+func (r *FakeRefreshRepo) Make(ownerID string, scope string) (t *db.RefreshToken, err error) {
+	args := r.Called(ownerID)
 	t, _ = args.Get(0).(*db.RefreshToken)
 	err = args.Error(1)
 	return
@@ -81,7 +81,7 @@ func TestAccessToken_UnsupportedGrantType_ReturnErr(t *testing.T) {
 
 func TestAccessToken_CodeRepoReturnErr_ReturnErr(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	r := new(FakeCodeRepo)
 	r.On("GetCode", mock.Anything).Return(nil, fmt.Errorf("ERROR"))
@@ -136,7 +136,7 @@ func TestAccessToken_CodeRepoCodeExpired_ReturnErr(t *testing.T) {
 
 func TestAccessToken_TokenRepoReturnErr_ReturnErr(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	r := new(FakeCodeRepo)
 	r.On("GetCode", mock.Anything).Return(&db.Code{Used: false, Expired: time.Now().Add(10 * time.Hour).UTC()}, nil)
@@ -156,7 +156,7 @@ func TestAccessToken_TokenRepoReturnErr_ReturnErr(t *testing.T) {
 
 func TestAccessToken_RefreshRepoReturnErr_ReturnErr(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	r := new(FakeCodeRepo)
 	r.On("GetCode", mock.Anything).Return(&db.Code{Used: false, Expired: time.Now().Add(10 * time.Hour).UTC()}, nil)
@@ -187,20 +187,20 @@ func TestAccessToken_ReturnResult(t *testing.T) {
 
 	var (
 		code    = "code"
-		ownerId = "ownerID"
+		ownerID = "ownerID"
 	)
 
 	resp := new(FakeResponse)
 	resp.On("Success", expected).Once()
 
 	r := new(FakeCodeRepo)
-	r.On("GetCode", code).Return(&db.Code{Used: false, OwnerID: ownerId, Expired: time.Now().Add(10 * time.Hour).UTC()}, nil)
+	r.On("GetCode", code).Return(&db.Code{Used: false, OwnerID: ownerID, Expired: time.Now().Add(10 * time.Hour).UTC()}, nil)
 
 	tr := new(FakeTokenRepo)
-	tr.On("Make", ownerId).Return(&db.AccessToken{Token: expected.Token, ExpiresIn: expected.ExpiresIn}, nil)
+	tr.On("Make", ownerID).Return(&db.AccessToken{Token: expected.Token, ExpiresIn: expected.ExpiresIn}, nil)
 
 	rr := new(FakeRefreshRepo)
-	rr.On("Make", ownerId).Return(&db.RefreshToken{Token: expected.Refresh}, nil)
+	rr.On("Make", ownerID).Return(&db.RefreshToken{Token: expected.Refresh}, nil)
 
 	a := Auth{CodeRepo: r, TokenRepo: tr, RefreshRepo: rr}
 	a.AccessToken(resp, core.AccessCode{GrantType: grantTypeAccessCode, Code: code})
@@ -220,7 +220,7 @@ func TestRefresh_UnsupportedGrantType_ReturnErr(t *testing.T) {
 
 func TestRefresh_RefreshRepoReturnErr_ReturnErr(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	l := new(FakeLogger)
 	l.On("Printf").Once()
@@ -250,7 +250,7 @@ func TestRefresh_RefreshRepoReturnResultNil_ReturnErr(t *testing.T) {
 
 func TestRefresh_TokenRepoReturnErr_ReturnErr(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	l := new(FakeLogger)
 	l.On("Printf").Once()
@@ -270,7 +270,7 @@ func TestRefresh_TokenRepoReturnErr_ReturnErr(t *testing.T) {
 
 func TestRefresh_ReturnVal(t *testing.T) {
 	var (
-		refreshToken = "referesh token"
+		refreshToken = "refresh token"
 		ownerID      = "owner id"
 	)
 	expected := &core.RefreshAccessToken{
@@ -296,7 +296,7 @@ func TestRefresh_ReturnVal(t *testing.T) {
 	resp.AssertExpectations(t)
 }
 
-func TestVerify_TokenRepoRerturnErr_ReturnInternalErr(t *testing.T) {
+func TestVerify_TokenRepoReturnErr_ReturnInternalErr(t *testing.T) {
 	resp := new(FakeResponse)
 	resp.On("Error", core.StatusErrorAccessTokenBroken).Once()
 

@@ -18,5 +18,5 @@ const (
 	StatusErrorRefreshTokenNotFound             ResponseStatus = 53090
 	StatusErrorCardInvalid                      ResponseStatus = 53100
 
-	StatusErrorInernalApplicationError ResponseStatus = 10000
+	StatusErrorInternalApplicationError ResponseStatus = 10000
 )

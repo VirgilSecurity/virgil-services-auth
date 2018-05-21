@@ -39,7 +39,7 @@ type responseError struct {
 
 func assertResponse(t *testing.T, expected core.ResponseStatus, r *fasthttp.RequestCtx) {
 	statusCpde := fasthttp.StatusBadRequest
-	if expected == core.StatusErrorInernalApplicationError {
+	if expected == core.StatusErrorInternalApplicationError {
 		statusCpde = fasthttp.StatusInternalServerError
 	} else if expected == core.StatusErrorAttemptNotFound {
 		statusCpde = fasthttp.StatusNotFound
@@ -65,8 +65,8 @@ func TestError_StatusErrorAttemptNotFound_Return404(t *testing.T) {
 func TestError_StatusErrorInernalApplicationError_Return500(t *testing.T) {
 	ctx := makeRequestCtx("body")
 	resp := response{ctx: ctx}
-	resp.Error(core.StatusErrorInernalApplicationError)
-	assertResponse(t, core.StatusErrorInernalApplicationError, ctx)
+	resp.Error(core.StatusErrorInternalApplicationError)
+	assertResponse(t, core.StatusErrorInternalApplicationError, ctx)
 }
 
 func TestError_OtherErrors_Return400(t *testing.T) {

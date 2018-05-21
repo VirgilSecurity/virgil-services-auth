@@ -2,12 +2,16 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
-	virgil "gopkg.in/virgil.v4"
-	"gopkg.in/virgil.v4/errors"
-	"gopkg.in/virgil.v4/virgilcrypto"
+	"github.com/stretchr/testify/require"
+
+	"gopkg.in/virgil.v5/cryptoapi"
+	"gopkg.in/virgil.v5/cryptoimpl"
+	"gopkg.in/virgil.v5/errors"
+	virgil "gopkg.in/virgil.v5/sdk"
 
 	"github.com/VirgilSecurity/virgil-services-auth/core"
 	"github.com/VirgilSecurity/virgil-services-auth/db"
@@ -71,7 +75,7 @@ type FakeCipher struct {
 	mock.Mock
 }
 
-func (c *FakeCipher) Encrypt(data []byte, recipient virgilcrypto.PublicKey) (m []byte, err error) {
+func (c *FakeCipher) Encrypt(data []byte, recipient cryptoapi.PublicKey) (m []byte, err error) {
 	args := c.Called(data, recipient)
 	m, _ = args.Get(0).([]byte)
 	err = args.Error(1)
@@ -84,7 +88,7 @@ func (c *FakeCipher) Validate(CipherData, plainData []byte) bool {
 
 func TestHandshake_CardClientReturnErr_LogAndReturnInternalError(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	c := new(FakeCardClient)
 	c.On("GetCard", mock.Anything).Return(nil, fmt.Errorf("format"))
@@ -104,7 +108,7 @@ func TestHandshake_CardNotFound_ReturnCardNotFoundStat(t *testing.T) {
 	resp.On("Error", core.StatusErrorCardNotFound).Once()
 
 	c := new(FakeCardClient)
-	c.On("GetCard", mock.Anything).Return(nil, virgil.ErrNotFound)
+	c.On("GetCard", mock.Anything).Return(nil, errors.NewServiceError(0, http.StatusNotFound, "Entity was not found"))
 
 	s := Grant{Client: c}
 	s.Handshake(resp, core.OwnerCard{ID: "id"})
@@ -138,7 +142,7 @@ func TestHandshake_CardProtected403_ReturnCardNotFoundStat(t *testing.T) {
 	resp.AssertExpectations(t)
 }
 
-func TestHandshake_CardNotVerified_ReturnCardNotValided(t *testing.T) {
+func TestHandshake_CardNotVerified_ReturnCardInvalid(t *testing.T) {
 	resp := new(FakeResponse)
 	resp.On("Error", core.StatusErrorCardInvalid).Once()
 
@@ -153,7 +157,7 @@ func TestHandshake_CardNotVerified_ReturnCardNotValided(t *testing.T) {
 
 func TestHandshake_AttemptRepoReturnErr_ReturnInternalErr(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	c := new(FakeCardClient)
 	c.On("GetCard", mock.Anything).Return(&virgil.Card{}, nil)
@@ -172,12 +176,10 @@ func TestHandshake_AttemptRepoReturnErr_ReturnInternalErr(t *testing.T) {
 }
 
 func TestHandshake_CipherReturnErr_ReturnInternalErr(t *testing.T) {
-	card := &virgil.Card{
-		Scope: virgil.CardScope.Global,
-	}
+	card := &virgil.Card{}
 
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	c := new(FakeCardClient)
 	c.On("GetCard", mock.Anything).Return(card, nil)
@@ -205,10 +207,11 @@ func TestHandshake_ReturnResp(t *testing.T) {
 		Message:   []byte("encrypted message"),
 	}
 
-	pk, _ := virgil.Crypto().ImportPublicKey([]byte(`MCowBQYDK2VwAyEA9C2xSdT5c+0Y1K87vH0c17gOrAZhXNGxW6sgjotoDOs=`))
+	pk, err := cryptoimpl.NewVirgilCrypto().ImportPublicKey([]byte(`MCowBQYDK2VwAyEA9C2xSdT5c+0Y1K87vH0c17gOrAZhXNGxW6sgjotoDOs=`))
+	require.NoError(t, err)
+
 	card := &virgil.Card{
-		Scope:     virgil.CardScope.Global,
-		PublicKey: pk,
+		PublicKey: pk.(cryptoapi.PublicKey),
 	}
 
 	resp := new(FakeResponse)
@@ -229,9 +232,9 @@ func TestHandshake_ReturnResp(t *testing.T) {
 	resp.AssertExpectations(t)
 }
 
-func TestAcknowledge_AttempRepoReturnErr_LogAndReturnInternalError(t *testing.T) {
+func TestAcknowledge_AttemptRepoReturnErr_LogAndReturnInternalError(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	a := new(FakeAttemptRepo)
 	a.On("Get", mock.Anything).Return(nil, fmt.Errorf("format"))
@@ -246,7 +249,7 @@ func TestAcknowledge_AttempRepoReturnErr_LogAndReturnInternalError(t *testing.T)
 	l.AssertExpectations(t)
 }
 
-func TestAcknowledge_AttempRepoReturnNil_ReturnAttemptNotFound(t *testing.T) {
+func TestAcknowledge_AttemptRepoReturnNil_ReturnAttemptNotFound(t *testing.T) {
 	resp := new(FakeResponse)
 	resp.On("Error", core.StatusErrorAttemptNotFound).Once()
 
@@ -259,7 +262,7 @@ func TestAcknowledge_AttempRepoReturnNil_ReturnAttemptNotFound(t *testing.T) {
 	resp.AssertExpectations(t)
 }
 
-func TestAcknowledge_AttempExpire_ReturnAttemptNotFound(t *testing.T) {
+func TestAcknowledge_AttemptExpire_ReturnAttemptNotFound(t *testing.T) {
 	resp := new(FakeResponse)
 	resp.On("Error", core.StatusErrorAttemptNotFound).Once()
 
@@ -272,7 +275,7 @@ func TestAcknowledge_AttempExpire_ReturnAttemptNotFound(t *testing.T) {
 	resp.AssertExpectations(t)
 }
 
-func TestAcknowledge_CipherReturnFalse_ReturnEncryptedMessageValidationFaild(t *testing.T) {
+func TestAcknowledge_CipherReturnFalse_ReturnEncryptedMessageValidationFailed(t *testing.T) {
 	resp := new(FakeResponse)
 	resp.On("Error", core.StatusErrorEncryptedMessageValidationFailed).Once()
 
@@ -289,7 +292,7 @@ func TestAcknowledge_CipherReturnFalse_ReturnEncryptedMessageValidationFaild(t *
 
 func TestAcknowledge_CodeRepoReturnErr_LogAndReturnInternalErr(t *testing.T) {
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	a := new(FakeAttemptRepo)
 	a.On("Get", mock.Anything).Return(&db.Attempt{Expired: time.Now().Add(10 * time.Minute)}, nil)
@@ -311,7 +314,7 @@ func TestAcknowledge_CodeRepoReturnErr_LogAndReturnInternalErr(t *testing.T) {
 }
 func TestAcknowledge_RemoveAttemptReturnErr_ReturnErr(t *testing.T) {
 	const (
-		attemtID  = "attempt id"
+		attemptID = "attempt id"
 		ownerID   = "owner id"
 		code      = "code"
 		CipherMsg = "Cipher message"
@@ -320,11 +323,11 @@ func TestAcknowledge_RemoveAttemptReturnErr_ReturnErr(t *testing.T) {
 	)
 
 	resp := new(FakeResponse)
-	resp.On("Error", core.StatusErrorInernalApplicationError).Once()
+	resp.On("Error", core.StatusErrorInternalApplicationError).Once()
 
 	a := new(FakeAttemptRepo)
-	a.On("Get", attemtID).Return(&db.Attempt{Expired: time.Now().Add(10 * time.Minute), OwnerID: ownerID, Message: plainMsg, Scope: scope}, nil)
-	a.On("Remove", attemtID).Return(fmt.Errorf("Error"))
+	a.On("Get", attemptID).Return(&db.Attempt{Expired: time.Now().Add(10 * time.Minute), OwnerID: ownerID, Message: plainMsg, Scope: scope}, nil)
+	a.On("Remove", attemptID).Return(fmt.Errorf("Error"))
 
 	l := new(FakeLogger)
 	l.On("Printf").Once()
@@ -336,7 +339,7 @@ func TestAcknowledge_RemoveAttemptReturnErr_ReturnErr(t *testing.T) {
 	ch.On("Validate", []byte(CipherMsg), []byte(plainMsg)).Return(true)
 
 	s := Grant{AttemptRepo: a, MakeCode: c, Logger: l, Cipher: ch}
-	s.Acknowledge(resp, core.EncryptedMessage{AttemptId: attemtID, Message: []byte(CipherMsg)})
+	s.Acknowledge(resp, core.EncryptedMessage{AttemptId: attemptID, Message: []byte(CipherMsg)})
 
 	resp.AssertExpectations(t)
 	l.AssertExpectations(t)
@@ -344,7 +347,7 @@ func TestAcknowledge_RemoveAttemptReturnErr_ReturnErr(t *testing.T) {
 
 func TestAcknowledge_ReturnVal(t *testing.T) {
 	const (
-		attemtID  = "attempt id"
+		attemptID = "attempt id"
 		ownerID   = "owner id"
 		code      = "code"
 		CipherMsg = "Cipher message"
@@ -356,8 +359,8 @@ func TestAcknowledge_ReturnVal(t *testing.T) {
 	resp.On("Success", map[string]string{"code": code}).Once()
 
 	a := new(FakeAttemptRepo)
-	a.On("Get", attemtID).Return(&db.Attempt{Expired: time.Now().Add(10 * time.Minute), OwnerID: ownerID, Message: plainMsg, Scope: scope}, nil)
-	a.On("Remove", attemtID).Return(nil)
+	a.On("Get", attemptID).Return(&db.Attempt{Expired: time.Now().Add(10 * time.Minute), OwnerID: ownerID, Message: plainMsg, Scope: scope}, nil)
+	a.On("Remove", attemptID).Return(nil)
 
 	c := new(FakeMakeCode)
 	c.On("Make", ownerID, scope).Return(&db.Code{Code: code}, nil)
@@ -366,7 +369,7 @@ func TestAcknowledge_ReturnVal(t *testing.T) {
 	ch.On("Validate", []byte(CipherMsg), []byte(plainMsg)).Return(true)
 
 	s := Grant{AttemptRepo: a, MakeCode: c, Cipher: ch}
-	s.Acknowledge(resp, core.EncryptedMessage{AttemptId: attemtID, Message: []byte(CipherMsg)})
+	s.Acknowledge(resp, core.EncryptedMessage{AttemptId: attemptID, Message: []byte(CipherMsg)})
 
 	resp.AssertExpectations(t)
 }

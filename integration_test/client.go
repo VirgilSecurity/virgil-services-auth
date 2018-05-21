@@ -30,7 +30,7 @@ type client struct {
 
 func (c *client) GetMessage(id string) (*core.EncryptedMessage, error) {
 	s, e := new(core.EncryptedMessage), new(errorResponse)
-	resp, err := c.c.New().Post("v4/authorization-grant/actions/get-challenge-message").BodyJSON(core.OwnerCard{
+	resp, err := c.c.New().Post("v5/authorization-grant/actions/get-challenge-message").BodyJSON(core.OwnerCard{
 		ID: id,
 	}).Receive(s, e)
 	if err == io.EOF {
@@ -48,7 +48,7 @@ func (c *client) GetMessage(id string) (*core.EncryptedMessage, error) {
 
 func (c *client) GetCode(msg core.EncryptedMessage) (string, error) {
 	s, e := new(core.AccessCode), new(errorResponse)
-	resp, err := c.c.New().Post(fmt.Sprintf("v4/authorization-grant/%s/actions/acknowledge", msg.AttemptId)).BodyJSON(core.EncryptedMessage{
+	resp, err := c.c.New().Post(fmt.Sprintf("v5/authorization-grant/%s/actions/acknowledge", msg.AttemptId)).BodyJSON(core.EncryptedMessage{
 		Message: msg.Message,
 	}).Receive(s, e)
 	if err == io.EOF {
@@ -66,7 +66,7 @@ func (c *client) GetCode(msg core.EncryptedMessage) (string, error) {
 
 func (c *client) GetToken(code string) (*core.Token, error) {
 	s, e := new(core.Token), new(errorResponse)
-	resp, err := c.c.New().Post("v4/authorization/actions/obtain-access-token").BodyJSON(core.AccessCode{
+	resp, err := c.c.New().Post("v5/authorization/actions/obtain-access-token").BodyJSON(core.AccessCode{
 		GrantType: "access_code",
 		Code:      code,
 	}).Receive(s, e)
@@ -85,7 +85,7 @@ func (c *client) GetToken(code string) (*core.Token, error) {
 
 func (c *client) Refresh(token string) (*core.RefreshAccessToken, error) {
 	s, e := new(core.RefreshAccessToken), new(errorResponse)
-	resp, err := c.c.New().Post("v4/authorization/actions/refresh-access-token").BodyJSON(map[string]string{
+	resp, err := c.c.New().Post("v5/authorization/actions/refresh-access-token").BodyJSON(map[string]string{
 		"grant_type":    "refresh_token",
 		"refresh_token": token,
 	}).Receive(s, e)
@@ -104,7 +104,7 @@ func (c *client) Refresh(token string) (*core.RefreshAccessToken, error) {
 
 func (c *client) Verify(token string) (string, error) {
 	s, e := new(core.OwnerCard), new(errorResponse)
-	resp, err := c.c.New().Post("v4/authorization/actions/verify").BodyJSON(core.Token{
+	resp, err := c.c.New().Post("v5/authorization/actions/verify").BodyJSON(core.Token{
 		Token: token,
 	}).Receive(s, e)
 	if err == io.EOF {

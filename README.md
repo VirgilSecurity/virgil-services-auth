@@ -14,19 +14,19 @@ Security, Inc. and is based on the OAuth2.0 proposal.
 * [Key Terms](#key-terms)
 * [General Information](#general-information)
 * [Endpoints](#endpoints)
-    * [POST /v4/authorization-grant/actions/get-challenge-message](#post-v4authorization-grantactionsget-challenge-message)
-    * [POST /v4/authorization-grant/{authorization_grant_id}/actions/acknowledge](#post-v4authorization-grantauthorization_grant_idactionsacknowledge)
-    * [POST /v4/authorization/actions/obtain-access-token](#post-v4authorizationactionsobtain-access-token)
-    * [POST /v4/authorization/actions/refresh-access-token](#post-v4authorizationactionsrefresh-access-token)
-    * [POST /v4/authorization/actions/verify](#post-v4authorizationactionsverify)
+    * [POST /v5/authorization-grant/actions/get-challenge-message](#post-v5authorization-grantactionsget-challenge-message)
+    * [POST /v5/authorization-grant/{authorization_grant_id}/actions/acknowledge](#post-v5authorization-grantauthorization_grant_idactionsacknowledge)
+    * [POST /v5/authorization/actions/obtain-access-token](#post-v5authorizationactionsobtain-access-token)
+    * [POST /v5/authorization/actions/refresh-access-token](#post-v5authorizationactionsrefresh-access-token)
+    * [POST /v5/authorization/actions/verify](#post-v5authorizationactionsverify)
 * [Get in start](#get-in-start)
     * [Prepare](#prepare)
     * [Install](#install)
     * [Usage](#usage)
     * [Settings](#settings)
 * [Health checker](#health-checker)
-    * [GET /v4/health/status](#get-v4healthstatus)
-    * [GET /v4/health/info](#get-v4healthinfo)
+    * [GET /v5/health/status](#get-v5healthstatus)
+    * [GET /v5/health/info](#get-v5healthinfo)
 * [Appendix A. Response codes](#appendix-a-response-codes)
 * [Appendix B. Environment](#appendix-b-environment)
 * [Appendix C. Links](#appendix-c-links)
@@ -60,12 +60,6 @@ with it.
 
 
 
-## General information
-* The service's application identity value is **com.virgilsecurity.auth**, so the public card can be found on the
- Virgil Card service using */card/{card-id}* endpoint.
-
-
-
 ## Endpoints
 
 In order to obtain an `Access Token` the client / third-party application initiates an `Authorization Grant` process
@@ -73,7 +67,7 @@ that includes 3 way handshake process described in PPP Challenge Handshake Authe
 
 
 
-### POST /v4/authorization-grant/actions/get-challenge-message
+### POST /v5/authorization-grant/actions/get-challenge-message
 
 To issue an `Authorization Grant` token for a `Client` it's necessary to make sure that the `Client` is valid. A 3 way
 handshake process is used for these purposes. The endpoint requires a `resource_owner_virgil_card_id` request parameter
@@ -107,7 +101,7 @@ Encrypted message is some random string that was encrypted for the `resource_own
 
 
 
-### POST /v4/authorization-grant/{authorization_grant_id}/actions/acknowledge
+### POST /v5/authorization-grant/{authorization_grant_id}/actions/acknowledge
 
 Acknowledges that `Resource Owner` holds valid Private Key and receives an `Authorization Grant` code in response.
 **encrypted_message** is a decrypted message from the previous step and re-encrypted with a Virgil Auth public key.
@@ -136,7 +130,7 @@ com.VirgilSecurity.keys_virgil_card[65bce698-b7be-46d3-941b-66936b235314,05e22b5
 
 
 
-### POST /v4/authorization/actions/obtain-access-token
+### POST /v5/authorization/actions/obtain-access-token
 
 The endpoint purpose is to exchange an `Authorization Grant` code from the previous step on a valid `Access Token`.
 
@@ -161,7 +155,7 @@ Response:
 > NOTE: "expires_in" parameter is measured by seconds
 
 
-### POST /v4/authorization/actions/refresh-access-token
+### POST /v5/authorization/actions/refresh-access-token
 
 The endpoint purpose is to generate a new `Access Token` using previously retrieved `Refresh Token`.
 
@@ -182,7 +176,7 @@ Response:
 ```
 >NOTE: "expires_in" parameter measured in seconds
 
-### POST /v4/authorization/actions/verify
+### POST /v5/authorization/actions/verify
 
 This endpoint is used by `Resource Server`s to verify an `Access Token` provided as an authorization grant.
 
@@ -220,7 +214,7 @@ $ docker pull virgilsecurity/virgil-auth
 
 
 # Use `docker run` for the first time.
-$ docker run --name=virgil-auth -p 80:8080 --net host -e TOKEN="{YOUR_VIRGIL_TOKEN}" -e KEY="{VIRGIL_AUTH_PRIVATE_KEY}" virgilsecurity/virgil-auth
+$ docker run --name=virgil-auth -p 80:8080 --net host -e APP_ID="{YOUR_VIRGIL_APP_ID}" -e API_KEY_ID="{YOUR_VIRGIL_API_KEY_ID}" -e API_KEY="{YOUR_VIRGIL_API_KEY}" -e KEY="{VIRGIL_AUTH_PRIVATE_KEY}" virgilsecurity/virgil-auth
 
 # Use `docker start` if you have stopped it.
 $ docker start virgil-auth
@@ -228,26 +222,28 @@ $ docker start virgil-auth
 
 To test:
 ```
-$ curl http://localhost/v4/health/status -v
+$ curl http://localhost/v5/health/status -v
 ```
 
 ## Settings
 
 Most of settings are obvious and easy to understand, but some parameters needed more detailed description:
-- *Token:* The access token provides an authenticated secure access to the Virgil services. [How to create access token](https://virgilsecurity.com/docs/faq/add-access-token)
-- *Cards address:* It's address of Virgil [cards service](https://virgilsecurity.com/docs/services/cards/v4/cards-service). It provides interface to search user's card.
+- *APP_ID:* ID of your Application at [Virgil Dashboard](https://dashboard.virgilsecurity.com)
+- *API_KEY_ID:* A unique string value that identifies your account at the Virgil developer portal
+- *API_KEY:* A Private Key that is used to sign API calls to Virgil Services. For security, you will only be shown the API Private Key when the key is created. Don't forget to save it in a secure location for the next step (You'll use your API Key that was created at Virgil Dashboard. For security purposes, you have to generate JWT on your server side.)
+- *Cards address:* It's address of Virgil [cards service](https://developer.virgilsecurity.com/docs/api-reference/card-service/v5). It provides interface to search user's card.
 - *Authority card:* It's a card whose signature we trust. If this parameter is set up then a client's card **must** have signature of the authority. The parameter contains of two values: card ID card and public key
 
 Full list of parameters in [Appendix B. Environment](#appendix-b-environment).
 
 # Health checker
 
-## GET /v4/health/status
+## GET /v5/health/status
 
 This endpoint is used to get status of Virgil Auth service.
 Return StatusOK (200) if the service work correctly otherwise return StatusBadRequest(400)
 
-## GET /v4/health/info
+## GET /v5/health/info
 
 This endpoint is used to get info of dependencies of Virgil Auth service.
 
@@ -257,11 +253,7 @@ Response:
   "mongo":{
     "status":200,
     "latency": 1,
-  },
-  "cards-service":{
-    "status":200,
-    "latency":113
-  }
+  }  
 }
 ```
 **Note:** Status parameter can take value 200 or 400. Latency parameter is measured in milliseconds
@@ -310,8 +302,11 @@ Additional information about the error is returned as JSON-object like:
 Command line arguments (prefix: --)| Environment name | Description
 ---|---|---
 db | DB | Connection string to mongodb (`by default 127.0.0.1:27017/virgil-auth`) |
-token | TOKEN | Token to get access to Virgil Cards service (`required`)
-cards-address | CARDS_ADDRESS | Address of Cards service (`by default used the Virgil Cards service`)
+api-key-id | API_KEY_ID | A unique string value that identifies your account at the Virgil developer portal (`required`)
+api-key | API_KEY | A Private Key that is used to sign API calls to Virgil Services. (`required`)
+api-key-password | API_KEY_PASSWORD | Passphrase for the API key
+app-id | APP_ID | ID of your Application at Virgil Dashboard (`required`)
+virgil-api-address | VIRGIL_API_ADDRESS | Address of Virgil cloud (`by default https://api.virgilsecurity.com`)
 key | KEY | Private key for response signing and message decryption (`required`) |
 key-password | KEY_PASSWORD | Passphrase for the private key |
 address| ADDRESS | Virgil Auth service address (`by default :8080`)

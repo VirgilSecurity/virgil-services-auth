@@ -3,26 +3,89 @@ package app
 import (
 	"log"
 	"os"
+	"time"
+
+	"github.com/valyala/fasthttp"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/virgil.v5/cryptoapi"
+	"gopkg.in/virgil.v5/cryptoimpl"
+	sdk "gopkg.in/virgil.v5/sdk"
 
 	"github.com/VirgilSecurity/virgil-services-auth/core/handlers"
 	"github.com/VirgilSecurity/virgil-services-auth/db/repo"
 	"github.com/VirgilSecurity/virgil-services-auth/http"
 	"github.com/VirgilSecurity/virgil-services-auth/services"
-	"github.com/valyala/fasthttp"
-	"gopkg.in/mgo.v2"
-	virgil "gopkg.in/virgil.v4"
-	"gopkg.in/virgil.v4/transport/virgilhttp"
+)
+
+var (
+	crypto interface {
+		ImportPrivateKey([]byte, string) (interface {
+			IsPrivate() bool
+			Identifier() []byte
+		}, error)
+		ImportPublicKey([]byte) (interface {
+			IsPublic() bool
+			Identifier() []byte
+		}, error)
+
+		ExtractPublicKey(interface {
+			IsPrivate() bool
+			Identifier() []byte
+		}) (interface {
+			IsPublic() bool
+			Identifier() []byte
+		}, error)
+
+		Encrypt(data []byte, key ...interface {
+			IsPublic() bool
+			Identifier() []byte
+		}) ([]byte, error)
+
+		Decrypt(cipherData []byte, key interface {
+			IsPrivate() bool
+			Identifier() []byte
+		}) ([]byte, error)
+
+		Sign(data []byte, key interface {
+			IsPrivate() bool
+			Identifier() []byte
+		}) ([]byte, error)
+
+		VerifySignature(data []byte, signature []byte, key interface {
+			IsPublic() bool
+			Identifier() []byte
+		}) (err error)
+	} = cryptoimpl.NewVirgilCrypto()
+
+	cardCrypto cryptoapi.CardCrypto = cryptoimpl.NewVirgilCardCrypto()
+
+	tokenSigner interface {
+		GenerateTokenSignature(data []byte, privateKey interface {
+			IsPrivate() bool
+			Identifier() []byte
+		}) ([]byte, error)
+
+		VerifyTokenSignature(data []byte, signature []byte, publicKey interface {
+			IsPublic() bool
+			Identifier() []byte
+		}) error
+
+		GetAlgorithm() string
+	} = cryptoimpl.NewVirgilAccessTokenSigner()
 )
 
 type VirgilClient struct {
-	Token              string
+	APIKeyStr          string
+	APIKeyPassword     string
+	APIKeyID           string
+	AppID              string
 	Host               string
 	AuthorityCardID    string
 	AuthorityPublicKey string
 }
 type PrivateKey struct {
 	Key      string
-	Passowrd string
+	Password string
 }
 type Config struct {
 	DBConnection      string
@@ -39,47 +102,35 @@ var (
 func Init(conf Config) {
 	logger = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
-	if conf.DBConnection == "" || conf.VirgilClient.Token == "" || conf.PrivateServiceKey.Key == "" {
-		logger.Fatalf("Required arguments were not filled. Run '[CMD] --help' for more information. Required arguments are marked *")
+	requiredParams := []string{
+		conf.DBConnection,
+		conf.VirgilClient.AppID,
+		conf.VirgilClient.APIKeyID,
+		conf.VirgilClient.APIKeyStr,
+		conf.PrivateServiceKey.Key,
 	}
-
-	session, err := mgo.Dial(conf.DBConnection)
+	for _, val := range requiredParams {
+		if val == "" {
+			logger.Fatalf("Required arguments were not filled. Run '[CMD] --help' for more information. Required arguments are marked *")
+		}
+	}
+	db, err := initDB(conf.DBConnection)
 	if err != nil {
 		logger.Fatalf("Cannot connect to db: %+v", err)
 	}
-	db := session.DB("")
 
-	privk, err := virgil.Crypto().ImportPrivateKey([]byte(conf.PrivateServiceKey.Key), conf.PrivateServiceKey.Passowrd)
+	cardManager, err := initCardManager(conf.VirgilClient)
+	if err != nil {
+		logger.Fatalf("Cannot init card manager: %+v", err)
+	}
+
+	sk, err := crypto.ImportPrivateKey([]byte(conf.PrivateServiceKey.Key), conf.PrivateServiceKey.Password)
 	if err != nil {
 		logger.Fatalf("Cannot import private.key: %+v", err)
 	}
-	pubk, err := privk.ExtractPublicKey()
+	pk, err := crypto.ExtractPublicKey(sk)
 	if err != nil {
 		logger.Fatalf("Cannot extract public key: %+v", err)
-	}
-
-	var clientOptions []func(*virgil.Client)
-	if conf.VirgilClient.Host != "" {
-		clientOptions = append(clientOptions, virgil.ClientTransport(virgilhttp.NewTransportClient(conf.VirgilClient.Host, conf.VirgilClient.Host, conf.VirgilClient.Host, conf.VirgilClient.Host)))
-	}
-	if conf.VirgilClient.AuthorityCardID != "" && conf.VirgilClient.AuthorityPublicKey != "" {
-		pub, err := virgil.Crypto().ImportPublicKey([]byte(conf.VirgilClient.AuthorityPublicKey))
-		if err != nil {
-			logger.Fatalf("Cannot import authority public key: %v", err)
-		}
-		validator := virgil.NewCardsValidator()
-		validator.AddVerifier(conf.VirgilClient.AuthorityCardID, pub)
-		clientOptions = append(clientOptions, virgil.ClientCardsValidator(validator))
-	}
-
-	virgilClient, err := virgil.NewClient(conf.VirgilClient.Token, clientOptions...)
-	if err != nil {
-		logger.Fatalf("Cannot create virgil client: %+v", err)
-	}
-
-	var checkCardId = conf.VirgilClient.AuthorityCardID
-	if checkCardId == "" {
-		checkCardId = "3e29d43373348cfb373b7eae189214dc01d7237765e572db685839b64adca853" // Virgil Card service
 	}
 
 	routing := http.Router{
@@ -90,8 +141,9 @@ func Init(conf Config) {
 					C: db.C("code"),
 				},
 				TokenRepo: &repo.AccessToken{
-					PrivateKey: privk,
-					PublicKey:  pubk,
+					PrivateKey: sk,
+					PublicKey:  pk,
+					Crypto:     crypto,
 				},
 				RefreshRepo: &repo.Refresh{
 					C: db.C("refresh_token"),
@@ -105,23 +157,19 @@ func Init(conf Config) {
 					C: db.C("code"),
 				},
 				AttemptRepo: &repo.Attempt{
-					C: db.C("attemt"),
+					C: db.C("attempt"),
 				},
 				Cipher: &services.Crypto{
-					PrivateKey: privk,
-					Crypto:     virgil.Crypto(),
+					PrivateKey: sk,
+					Crypto:     crypto,
 				},
-				Client: virgilClient,
+				Client: cardManager,
 			},
 		},
 		HealthChecker: &http.HealthChecker{
 			CheckList: []http.Checker{
 				&repo.HealthChecker{
-					S: session,
-				},
-				&services.CardsServiceHealthChecker{
-					Vclient: virgilClient,
-					CardId:  checkCardId,
+					S: db.Session,
 				},
 				versionChecker{conf.Version},
 			},
@@ -130,6 +178,60 @@ func Init(conf Config) {
 	server = fasthttp.Server{
 		Handler: routing.Handler,
 	}
+}
+
+func initDB(conStr string) (*mgo.Database, error) {
+	session, err := mgo.Dial(conStr)
+	if err != nil {
+		return nil, err
+	}
+	return session.DB(""), nil
+}
+
+func initCardManager(conf VirgilClient) (*sdk.CardManager, error) {
+	// import a private key
+	apiKey, err := crypto.ImportPrivateKey([]byte(conf.APIKeyStr), conf.APIKeyPassword)
+	if err != nil {
+		logger.Fatalf("Cannot import API key: %+v", err)
+	}
+	// setup JWT generator
+	jwtGenerator := sdk.NewJwtGenerator(apiKey, conf.APIKeyID, tokenSigner, conf.AppID, 24*time.Hour)
+	authenticatedQueryToServerSide := func(context *sdk.TokenContext) (*sdk.Jwt, error) {
+		return jwtGenerator.GenerateToken("auth service", nil)
+	}
+	accessTokenProvider := sdk.NewCachingJwtProvider(authenticatedQueryToServerSide)
+
+	// setup card verifier
+	var virgilSign = true
+	var whitelist *sdk.Whitelist
+	if conf.AuthorityPublicKey != "" {
+		if conf.AuthorityCardID == "" {
+			logger.Fatalf("Authority card id missed")
+		}
+
+		virgilSign = false
+
+		authPK, err := crypto.ImportPublicKey([]byte(conf.AuthorityPublicKey))
+		if err != nil {
+			logger.Fatalf("Cannot import authority public key: %+v", err)
+		}
+
+		whitelist = sdk.NewWhitelist(&sdk.VerifierCredentials{
+			Signer:    conf.AuthorityCardID,
+			PublicKey: authPK,
+		})
+	}
+	cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, virgilSign, whitelist)
+	if err != nil {
+		logger.Fatalf("Cannot create Virgil card verifier: %+v", err)
+	}
+
+	return sdk.NewCardManager(&sdk.CardManagerParams{
+		Crypto:              cardCrypto,
+		CardVerifier:        cardVerifier,
+		AccessTokenProvider: accessTokenProvider,
+		ApiUrl:              conf.Host,
+	})
 }
 
 func Run(address string) {

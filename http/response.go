@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/valyala/fasthttp"
 	"github.com/VirgilSecurity/virgil-services-auth/core"
+	"github.com/valyala/fasthttp"
 )
 
 type response struct {
@@ -19,7 +19,7 @@ func (r *response) Error(code core.ResponseStatus) {
 		return
 	}
 	status := fasthttp.StatusBadRequest
-	if code == core.StatusErrorInernalApplicationError {
+	if code == core.StatusErrorInternalApplicationError {
 		status = fasthttp.StatusInternalServerError
 	}
 	r.ctx.SetStatusCode(status)
@@ -31,7 +31,7 @@ func (r *response) Success(model interface{}) {
 	r.ctx.SetContentType("application/json")
 	err := json.NewEncoder(r.ctx).Encode(model)
 	if err != nil {
-		r.Error(core.StatusErrorInernalApplicationError)
+		r.Error(core.StatusErrorInternalApplicationError)
 		return
 	}
 }

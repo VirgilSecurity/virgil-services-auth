@@ -58,13 +58,13 @@ test-all:
 clean:
 	rm $(BINARY)
 
-$(GOPATH)/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/virgil_crypto_go.go:
+$(GOPATH)/src/gopkg.in/virgilsecurity/virgil-crypto-go.v5/virgil_crypto_go.go:
 ifeq ($(C_CRYPTO),true)
-	go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v4
-	cd $$GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4 ;	 make BRANCH=v2.2.5
+	go get -d gopkg.in/virgilsecurity/virgil-crypto-go.v5
+	cd $$GOPATH/src/gopkg.in/virgilsecurity/virgil-crypto-go.v5 ;	 make BRANCH=v2.4.4
 endif
 
-get: $(GOPATH)/src/gopkg.in/virgilsecurity/virgil-crypto-go.v4/virgil_crypto_go.go
+get: $(GOPATH)/src/gopkg.in/virgilsecurity/virgil-crypto-go.v5/virgil_crypto_go.go
 	go get -v -d -t -tags docker  ./...
 
 build: get
