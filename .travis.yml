@@ -14,12 +14,14 @@ matrix:
           - TARGET_OS=linux
           - DB=127.0.0.1:27017
           - CRYPTO_CND_URL=virgil-crypto-2.4.4-go-linux-x86_64.tgz 
+          - CC=gcc-8 
+          - CXX=g++-8
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-6
+            - g++-8
 # MACOS
     - os: osx
       language: go
