@@ -218,7 +218,7 @@ func initCardManager(conf VirgilClient) (*sdk.CardManager, error) {
 			PublicKey: authPK,
 		}))
 	} else {
-		cardVerifier, err = sdk.NewVirgilCardVerifier(cardCrypto, true, true, nil)
+		cardVerifier, err = sdk.NewVirgilCardVerifier(cardCrypto, true, true)
 	}
 
 	if err != nil {
