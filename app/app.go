@@ -202,26 +202,25 @@ func initCardManager(conf VirgilClient) (*sdk.CardManager, error) {
 	accessTokenProvider := sdk.NewCachingJwtProvider(authenticatedQueryToServerSide)
 
 	// setup card verifier
-	var virgilSign = true
-	var whitelist *sdk.Whitelist
+	var cardVerifier *sdk.VirgilCardVerifier
 	if conf.AuthorityPublicKey != "" {
 		if conf.AuthorityCardID == "" {
 			logger.Fatalf("Authority card id missed")
 		}
-
-		virgilSign = false
 
 		authPK, err := crypto.ImportPublicKey([]byte(conf.AuthorityPublicKey))
 		if err != nil {
 			logger.Fatalf("Cannot import authority public key: %+v", err)
 		}
 
-		whitelist = sdk.NewWhitelist(&sdk.VerifierCredentials{
+		cardVerifier, err = sdk.NewVirgilCardVerifier(cardCrypto, true, false, sdk.NewWhitelist(&sdk.VerifierCredentials{
 			Signer:    conf.AuthorityCardID,
 			PublicKey: authPK,
-		})
+		}))
+	} else {
+		cardVerifier, err = sdk.NewVirgilCardVerifier(cardCrypto, true, true, nil)
 	}
-	cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, virgilSign, whitelist)
+
 	if err != nil {
 		logger.Fatalf("Cannot create Virgil card verifier: %+v", err)
 	}
