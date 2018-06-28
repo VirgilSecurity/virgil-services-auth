@@ -311,6 +311,7 @@ key | KEY | Private key for response signing and message decryption (`required`)
 key-password | KEY_PASSWORD | Passphrase for the private key |
 address| ADDRESS | Virgil Auth service address (`by default :8080`)
 authority-id | AUTHORITY_ID | Authority card id (`by default used Virgil Cards Service ID`)
+use-sha256-fingerprints | USE_SHA256_FINGERPRINTS | Use for encryption/decryption SHA256 (old format) (`by default: false`)
 authority-pubkey | AUTHORITY_PUBKEY | Authority public key (`by default used Virgil Cards Service Public key`)
 
 # Appendix C. Links

@@ -8,7 +8,6 @@ import (
 	"github.com/valyala/fasthttp"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/virgil.v5/cryptoapi"
-	"gopkg.in/virgil.v5/cryptoimpl"
 	sdk "gopkg.in/virgil.v5/sdk"
 
 	"github.com/VirgilSecurity/virgil-services-auth/core/handlers"
@@ -55,9 +54,9 @@ var (
 			IsPublic() bool
 			Identifier() []byte
 		}) (err error)
-	} = cryptoimpl.NewVirgilCrypto()
+	}
 
-	cardCrypto cryptoapi.CardCrypto = cryptoimpl.NewVirgilCardCrypto()
+	cardCrypto cryptoapi.CardCrypto
 
 	tokenSigner interface {
 		GenerateTokenSignature(data []byte, privateKey interface {
@@ -71,7 +70,7 @@ var (
 		}) error
 
 		GetAlgorithm() string
-	} = cryptoimpl.NewVirgilAccessTokenSigner()
+	}
 )
 
 type VirgilClient struct {
@@ -88,10 +87,11 @@ type PrivateKey struct {
 	Password string
 }
 type Config struct {
-	DBConnection      string
-	Version           string
-	VirgilClient      VirgilClient
-	PrivateServiceKey PrivateKey
+	DBConnection          string
+	Version               string
+	VirgilClient          VirgilClient
+	PrivateServiceKey     PrivateKey
+	UseSha256Fingerprints bool
 }
 
 var (
@@ -100,6 +100,8 @@ var (
 )
 
 func Init(conf Config) {
+
+	setupCrypto(conf.UseSha256Fingerprints)
 	logger = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
 	requiredParams := []string{

@@ -22,6 +22,7 @@ func init() {
 	flag.StringVar(&config.PrivateServiceKey.Password, "key-password", "", `Passphrase for the private key`)
 	flag.StringVar(&config.VirgilClient.AuthorityCardID, "authority-id", "", "Authority card id. A client's card must have signature of the authority. By default usage Virgil Cards Service id.")
 	flag.StringVar(&config.VirgilClient.AuthorityPublicKey, "authority-pubkey", "", "Authority public key (encoded into bas64).  Authority card id. A client's card must have signature of the authority. By default usege Virgil Cards Service public key.")
+	flag.BoolVar(&config.UseSha256Fingerprints, "use-sha256-fingerprints", false, "Use for encryption/decryption SHA256 (old format)")
 	flag.StringVar(&address, "address", ":8080", "Virgil Auth service address")
 }
 
